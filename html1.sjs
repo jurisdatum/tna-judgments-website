@@ -24,7 +24,7 @@ function highlightDocument() {
 var response;
 if (doc) {
     xdmp.setResponseContentType('text/html');
-    response = xdmp.xsltInvoke('judgment.xsl', doc, params, { template: 'page' });
+    response = xdmp.xsltInvoke('judgment1.xsl', doc, params, { template: 'page' });
 } else {
     xdmp.setResponseCode(404, 'Not Found');
     xdmp.setResponseContentType('text/plain');

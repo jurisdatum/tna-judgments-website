@@ -47,6 +47,11 @@ exports.countAllDocuments = function() {
     return cts.estimate(query);
 };
 
+exports.collectionExists = function(collection) {
+    const query = cts.collectionQuery([collection]);
+    return cts.exists(query);
+};
+
 exports.countDocumentsInCollection = function(collection, year) {
     if (year) {
         const query = cts.directoryQuery('/' + collection + '/' + year + '/', '1');

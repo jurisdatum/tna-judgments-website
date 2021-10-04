@@ -8,41 +8,30 @@
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	exclude-result-prefixes="html math xs">
 
-<xsl:import href="page.xsl" />
-
-<xsl:param name="collection" as="xs:string" />
-<xsl:param name="year" as="xs:string" />
-<xsl:param name="number" as="xs:string" />
-
 <xsl:strip-space elements="*" />
 
-<xsl:template name="title">
-	<xsl:value-of select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRname/@value" />
-</xsl:template>
+<xsl:output method="html" encoding="utf-8" />
 
-<xsl:template name="breadcrumbs">
-	<a href="/{ $collection }">
-		<xsl:value-of select="$collection" />
-	</a>
-	<span> / </span>
-	<a href="/{ $collection }/{ $year }">
-		<xsl:value-of select="$year" />
-	</a>
-	<span> / </span>
-	<span>
-		<xsl:value-of select="$number" />
-	</span>
-</xsl:template>
+<xsl:variable name="title" as="xs:string">
+	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRname/@value" />
+</xsl:variable>
 
-<xsl:template name="content">
-	<xsl:apply-templates select="/" />
-</xsl:template>
+<xsl:template match="akomaNtoso">
+	<html>
+        <head>
+            <title>
+                <xsl:value-of select="$title" />
+            </title>
+            <style>
 
-<xsl:template match="judgment">
-	<article id="judgment">
-		<xsl:apply-templates />
-		<xsl:call-template name="footnotes" />
-	</article>
+body { padding: 1cm 1in }
+				<xsl:call-template name="style" />
+            </style>
+        </head>
+        <body>
+			<xsl:apply-templates />
+        </body>
+	</html>
 </xsl:template>
 
 <xsl:template match="meta" />
@@ -65,7 +54,6 @@
 			</xsl:analyze-string>
 		</xsl:non-matching-substring>
 	</xsl:analyze-string>
-<xsl:text>
 #judgment .tab { display: inline-block; width: 0.25in }
 #judgment section { position: relative }
 #judgment h2 { font-size: inherit; font-weight: normal }
@@ -76,7 +64,14 @@
 #judgment table { margin: 0 auto }
 #judgment .fn { vertical-align: super; font-size: small }
 #judgment .footnote > p > .marker { vertical-align: super; font-size: small }
-</xsl:text>
+
+</xsl:template>
+
+<xsl:template match="judgment">
+	<article id="judgment">
+		<xsl:apply-templates />
+		<xsl:call-template name="footnotes" />
+	</article>
 </xsl:template>
 
 <xsl:template name="class">
@@ -224,13 +219,6 @@
 		<xsl:copy-of select="@*"/>
 		<xsl:apply-templates />
 	</xsl:copy>
-</xsl:template>
-
-
-<!-- highlights -->
-
-<xsl:template match="html:mark">
-	<xsl:copy-of select="." />
 </xsl:template>
 
 </xsl:transform>

@@ -2,7 +2,6 @@
 const db = require('db.sjs');
 
 const collections = cts.collections();
-// const total = fn.count(fn.doc())
 const total = db.countAllDocuments();
 const docs = db.fetchMostRecentTwentyJudgments();
 

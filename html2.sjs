@@ -18,7 +18,7 @@ if (highlight)
 const match = uri.match(/^\/([a-z]+(\/[a-z]+)?)\/(\d+)\/(\d+)/);
 const params = { collection: match[1], year: match[3], number: match[4] };
 xdmp.setResponseContentType('text/html');
-return xdmp.xsltInvoke('judgment.xsl', doc, params, { template: 'page' });    
+return xdmp.xsltInvoke('judgment1.xsl', doc, params, { template: 'page' });
 
 })()
 

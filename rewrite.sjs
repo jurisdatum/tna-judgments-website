@@ -3,7 +3,7 @@ const url = xdmp.getRequestUrl();
 
 url.match(/^\/$/) ? 'index.sjs' :
 
-// url.match(/\.css$/) ? url :
+// url.match(/^\/test\?/) ? 'test.sjs' + url.substring(5):
 
 url.match(/^\/search\?/) ?
     'search.xqy' + url.substring(url.indexOf('?')) :
@@ -28,5 +28,8 @@ url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\?/) ?
 
 url.match(/^\/[a-z]+\/[a-z]+\/\d+\/\d+\/data\.xml$/) ?
     'xml1.sjs?uri=' + url :
+
+url.match(/^\/[a-z]+\/[a-z]+\/\d+\/\d+\/data\.html$/) ?
+    'html0.xqy?uri=' + url.substring(0, url.length - 10) :
 
 '400.sjs?uri=' + url

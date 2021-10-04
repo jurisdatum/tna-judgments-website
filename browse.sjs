@@ -4,7 +4,7 @@ const db = require('db.sjs');
 const collection = xdmp.getRequestField('collection');
 const year = xdmp.getRequestField('year');
 
-if (fn.empty(fn.collection(collection))) {
+if (!db.collectionExists(collection)) {
     xdmp.setResponseCode(404, 'Not Found');
     xdmp.setResponseContentType('text/plain');
     "Not Found"
