@@ -2,7 +2,6 @@
 
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
 	xpath-default-namespace="http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
-	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:math="http://www.w3.org/1998/Math/MathML"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -34,7 +33,7 @@
 </xsl:template>
 
 <xsl:template name="content">
-	<xsl:apply-templates select="/" />
+	<xsl:apply-templates select="/akomaNtoso/judgment" />
 </xsl:template>
 
 <xsl:template name="akomaNtoso">

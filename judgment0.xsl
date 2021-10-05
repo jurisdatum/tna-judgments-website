@@ -2,7 +2,6 @@
 
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
 	xpath-default-namespace="http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
-	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:math="http://www.w3.org/1998/Math/MathML"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -10,15 +9,19 @@
 
 <xsl:strip-space elements="*" />
 
-<xsl:output method="html" encoding="utf-8" />
+<xsl:output method="html" encoding="utf-8" indent="yes" include-content-type="no" />
+<!-- doctype-system="about:legacy-compat" -->
 
 <xsl:variable name="title" as="xs:string">
 	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRname/@value" />
 </xsl:variable>
 
 <xsl:template match="akomaNtoso">
+	<xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html&gt;
+</xsl:text>
 	<html>
         <head>
+			<meta charset="utf-8" />
             <title>
                 <xsl:value-of select="$title" />
             </title>

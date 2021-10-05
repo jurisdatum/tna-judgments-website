@@ -2,18 +2,21 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
     xpath-default-namespace="http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
-    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs">
 
-<xsl:output method="html" encoding="utf-8" />
+<xsl:output method="html" encoding="utf-8" indent="yes" include-content-type="no" />
+<!-- doctype-system="about:legacy-compat" -->
 
 <xsl:param name="q" as="xs:string?" select="()" />
 <xsl:param name="collection" as="xs:string?" select="()" />
 <xsl:param name="year" as="xs:string?" select="()" />
 
 <xsl:template name="page">
+	<xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html&gt;
+</xsl:text>
 	<html>
         <head>
+			<meta charset="utf-8" />
             <title>
                 <xsl:call-template name="title" />
             </title>
