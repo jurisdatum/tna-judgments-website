@@ -455,6 +455,9 @@
                     <xsl:if test="exists($to) and $param != 'to'">
                         <xsl:sequence select="concat( 'to=', encode-for-uri(string($to)) )" />
                     </xsl:if>
+                    <xsl:if test="$order">
+                        <xsl:sequence select="concat( 'order=', encode-for-uri($order) )" />
+                    </xsl:if>
                 </xsl:variable>
                 <xsl:if test="exists($components)">
                     <xsl:sequence select="'?'" />
