@@ -19,6 +19,8 @@
 </xsl:template>
 
 <xsl:template name="breadcrumbs">
+    <a href="/">/</a>
+    <xsl:text> </xsl:text>
 	<a href="/{ $collection }">
 		<xsl:value-of select="$collection" />
 	</a>
@@ -33,6 +35,11 @@
 </xsl:template>
 
 <xsl:template name="content">
+	<div style="position:absolute;left:1em">
+		<span style="display:inline-block;padding:3pt;background-color: var(--color);color:gray">
+			<a href="/{ $collection }/{ $year }/{ $number }/data.xml?pretty=true">XML</a>
+		</span>
+	</div>
 	<xsl:apply-templates select="/akomaNtoso/judgment" />
 </xsl:template>
 

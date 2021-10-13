@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
-	xmlns="http://www.w3.org/1999/xhtml"
     xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs">
 
 <xsl:import href="page.xsl" />
@@ -21,10 +20,12 @@
 </xsl:template>
 
 <xsl:template name="breadcrumbs">
+    <a href="/">/</a>
+    <xsl:text> </xsl:text>
 	<a href="/{ $collection }">
 		<xsl:value-of select="$collection" />
 	</a>
-	<span> / </span>
+	<xsl:text> / </xsl:text>
     <xsl:value-of select="$year" />
 </xsl:template>
 

@@ -2,34 +2,88 @@ xquery version "1.0-ml";
 
 import module namespace search = "http://marklogic.com/appservices/search" at "/MarkLogic/appservices/search/search.xqy";
 
-let $q := xdmp:get-request-field('q')
-let $scope := xdmp:get-request-field('scope', 'full')
-let $collection := xdmp:get-request-field('collection')
+declare namespace akn = "http://docs.oasis-open.org/legaldocml/ns/akn/3.0";
+declare namespace uk = "https:/judgments.gov.uk/";
 
-let $page as xs:integer := let $raw := xdmp:get-request-field('page', '1') return if ($raw castable as xs:integer) then xs:integer($raw) else 1
-let $page-size as xs:integer := let $raw := xdmp:get-request-field('page-size', '20') return if ($raw castable as xs:integer) then xs:integer($raw) else 20
+declare function uk:get-request-int($name as xs:string, $default as xs:integer) as xs:integer {
+    let $raw := xdmp:get-request-field($name)
+    return if ($raw castable as xs:integer) then xs:integer($raw) else $default
+};
+declare function uk:get-request-date($name as xs:string) as xs:date? {
+    let $raw := xdmp:get-request-field($name)
+    return if ($raw castable as xs:date) then xs:date($raw) else ()
+};
+
+declare variable $q as xs:string? := xdmp:get-request-field('q');
+declare variable $party as xs:string? := xdmp:get-request-field('party');
+declare variable $collection as xs:string? := xdmp:get-request-field('collection');
+declare variable $court as xs:string? := xdmp:get-request-field('court');
+declare variable $judge as xs:string? := xdmp:get-request-field('judge');
+declare variable $from as xs:date? := uk:get-request-date('from');
+declare variable $to as xs:date? := uk:get-request-date('to');
+declare variable $order as xs:string? := xdmp:get-request-field('order');
+declare variable $page as xs:integer := uk:get-request-int('page', 1);
+declare variable $page-size as xs:integer := uk:get-request-int('page-size', 20);
+
 let $start as xs:integer := ($page - 1) * $page-size + 1
 
-let $_ := xdmp:log(concat('searching in ', $collection))
+let $params := map:map()
+    => map:with('q', $q)
+    => map:with('party', $party)
+    => map:with('collection', $collection)
+    => map:with('court', $court)
+    => map:with('judge', $judge)
+    => map:with('from', $from)
+    => map:with('to', $to)
+    => map:with('order', $order)
+    => map:with('page', $page)
+    => map:with('page-size', $page-size)
 
-let $query :=
-    let $query1 := if ($scope = 'party')
-        then cts:element-word-query(fn:QName('http://docs.oasis-open.org/legaldocml/ns/akn/3.0', 'party'), $q)
-        else cts:word-query($q)
-    return if ($collection)
-        then cts:and-query(( cts:directory-query(fn:concat('/', $collection, '/'), 'infinity'), $query1 ))
-        else $query1
+let $query1 := if ($q) then cts:word-query($q) else ()
+let $query2 := if ($party) then cts:element-word-query(fn:QName('http://docs.oasis-open.org/legaldocml/ns/akn/3.0', 'party'), $party) else ()
+let $query3 := if ($collection) then cts:directory-query(fn:concat('/', $collection, '/'), 'infinity') else ()
+let $query4 := if ($court) then cts:element-value-query(fn:QName('https:/judgments.gov.uk/', 'court'), $court, ('case-insensitive')) else ()
+let $query5 := if ($judge) then cts:element-word-query(fn:QName('http://docs.oasis-open.org/legaldocml/ns/akn/3.0', 'judge'), $judge) else ()
+let $query6 := if (exists($from)) then
+    let $ref := cts:path-reference('akn:FRBRWork/akn:FRBRdate/@date', 'type=date', map:map()=> map:with('akn', 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0'))
+    return cts:range-query($ref, '>=', $from) else ()
+let $query7 := if (exists($to)) then
+    let $ref := cts:path-reference('akn:FRBRWork/akn:FRBRdate/@date', 'type=date', map:map()=> map:with('akn', 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0'))
+    return cts:range-query($ref, '<=', $to) else ()
+let $queries := ( $query1, $query2, $query3, $query4, $query5, $query6, $query7 )
+let $query := cts:and-query($queries)
 
-let $options := <options xmlns="http://marklogic.com/appservices/search">
+let $show-snippets as xs:boolean := exists(( $query1, $query2, $query5 ))
+
+let $sort-order := if ($order = 'date') then
+    <sort-order xmlns="http://marklogic.com/appservices/search" direction="ascending">
+        <path-index xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">akn:FRBRWork/akn:FRBRdate/@date</path-index>
+    </sort-order>
+else if ($order = '-date') then
+    <sort-order xmlns="http://marklogic.com/appservices/search" direction="descending">
+        <path-index xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">akn:FRBRWork/akn:FRBRdate/@date</path-index>
+    </sort-order>
+else
+    ()
+
+let $transform-results := if ($show-snippets) then
+    <transform-results apply="snippet">
+        <preferred-matches>
+            <element name="p" ns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0"/>
+        </preferred-matches>
+    </transform-results>
+else
+    <transform-results apply="empty-snippet" />
+
+let $search-options := <options xmlns="http://marklogic.com/appservices/search">
+    { $sort-order }
     <extract-document-data xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
         <extract-path>//akn:FRBRWork/akn:FRBRname</extract-path>
         <extract-path>//akn:neutralCitation</extract-path>
         <extract-path>//akn:FRBRWork/akn:FRBRdate</extract-path>
     </extract-document-data>
+    { $transform-results }
 </options>
 
-let $response := search:resolve($query, $options, $start, $page-size)
-let $_ := xdmp:log($response)
-let $params := map:map() => map:with('q', $q) => map:with('scope', $scope) => map:with('collection', $collection) => map:with('page', $page) => map:with('page-size', $page-size)
-let $xslt-options := map:map() => map:with('template', 'page')
-return xdmp:xslt-invoke('search.xsl', $response, $params, $xslt-options)
+let $results := search:resolve($query, $search-options, $start, $page-size)
+return xdmp:xslt-invoke('search.xsl', $results, $params)

@@ -4,12 +4,7 @@
     xpath-default-namespace="http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
     xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs">
 
-<xsl:output method="html" encoding="utf-8" indent="yes" include-content-type="no" />
-<!-- doctype-system="about:legacy-compat" -->
-
-<xsl:param name="q" as="xs:string?" select="()" />
-<xsl:param name="collection" as="xs:string?" select="()" />
-<xsl:param name="year" as="xs:string?" select="()" />
+<xsl:output method="html" encoding="utf-8" indent="yes" include-content-type="no" /> <!-- doctype-system="about:legacy-compat" -->
 
 <xsl:template name="page">
 	<xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html&gt;
@@ -20,19 +15,22 @@
             <title>
                 <xsl:call-template name="title" />
             </title>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans" />
             <style>
-:root { --color: lavender }
+:root { --color: lavender; --font: 'Open Sans', sans-serif }
 body { margin: 0 }
 
-body > header { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 0 1in 12pt 1in; background-color: var(--color) }
+body > header { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 0 1in 12pt 1in; background-color: var(--color); font-family: var(--font) }
 body > header > div { display:flex; width:calc(100% - 2in); justify-content: space-between; align-items: baseline }
+body > header h1 { margin-bottom: 0.5em }
 #search-form, #lookup-form { margin-bottom: 0 }
-#search-form > input[name='q'] { width: 50ch }
+#search-form > input[name='q'] { width: 40ch }
 #lookup-form > input[name='cite'] { width: 30ch }
 
 body > #content { margin-top: 128px; padding: 0 1in 12pt 1in }
-#left-column { }
-#middle-column, #right-column { padding-left: 2em }
+#left-column { font-family: var(--font) }
+#middle-column { padding-left: 2em; font-family: var(--font) }
+#right-column { padding-left: 2em; flex: 1; font-family: var(--font) }
 #left-column > h2, #middle-column > h2, #right-column > h2 { margin-top: 0 } 
 a { color: inherit; text-decoration: none }
 a:hover { text-decoration: underline }
@@ -40,14 +38,21 @@ body > header > div > h1 > a:hover { text-decoration: none }
 
 ul.collections, ul.years, ul.judgments { padding: 0; list-style-type: none }
 .collections > li > a, .years > li > a { display: inline-block; padding: 2pt 6pt }
+.years > li { text-align: center }
 .judgments > li > a { display: inline-block; padding: 3pt 6pt }
 .collections > li:hover, .years > li:hover, .judgments > li:hover { background-color: var(--color) }
 .collections > li.highlight, .years > li.highlight, .judgments > li.highlight { background-color: var(--color) }
 .collections > li > a:hover, .years > li > a:hover, .judgments > li > a:hover { text-decoration: none }
 .total { margin-top: 2em; margin-left: 6pt; font-size: smaller }
 
-.search-result > div > a { display: inline-block; padding: 2pt 6pt }
+.pills { margin-top: 6pt }
+.pill { margin-left: 1ch; margin-right: 1ch; border-radius: 25px; padding: 3pt 9pt; background-color: var(--color); font-size: smaller }
+.pill > span, .pill > a { display: inline-block; margin-left: 3pt }
+.search-result > div > a { display: inline-block; padding: 3pt 6pt }
 .search-result > div > a:hover { text-decoration: none; background-color: var(--color) }
+ul.snippets { margin-top: 3pt; margin-bottom: 9pt }
+
+mark { padding: 0 2pt; background-color: var(--color) }
 
 <xsl:call-template name="style" />
             </style>
@@ -84,34 +89,9 @@ ul.collections, ul.years, ul.judgments { padding: 0; list-style-type: none }
 
 <xsl:template name="search-form">
     <form id="search-form" action="/search">
-        <input type="text" name="q" value="{ $q }" autofocus="true" placeholder="search terms" />
+        <input type="text" name="q" autofocus="true" placeholder="search terms" />
         <input type="submit" value="Search" />
-        <select name="scope">
-            <option value="full">Full Text</option>
-            <option value="party">Party Name</option>
-        </select>
-        <select name="collection">
-            <option value="">
-                <xsl:text>in all documents</xsl:text>
-            </option>
-            <xsl:if test="$collection"> <!-- might be = '' -->
-                <option value="{ $collection }">
-                    <xsl:if test="not($year)">
-                        <xsl:attribute name="selected" />
-                    </xsl:if>
-                    <xsl:text>in </xsl:text>
-                    <xsl:value-of select="$collection" />
-                </option>
-                <xsl:if test="$year">
-                    <option value="{ $collection }/{ $year }" selected="">
-                        <xsl:text>in </xsl:text>
-                        <xsl:value-of select="$collection" />
-                        <xsl:text>/</xsl:text>
-                        <xsl:value-of select="$year" />
-                    </option>
-                </xsl:if>
-            </xsl:if>
-        </select>
+        <a href="/search" style="display:inline-block;margin-left:3pt;font-size:smaller">Advanced</a>
     </form>
 </xsl:template>
 

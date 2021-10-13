@@ -10,6 +10,10 @@
 <xsl:param name="total" as="xs:integer" />
 <xsl:param name="docs" as="document-node()*" />
 
+<xsl:template name="breadcrumbs">
+    <a href="/">/</a>
+</xsl:template>
+
 <xsl:template name="left-column">
     <h2>Collections</h2>
     <ul class="collections">

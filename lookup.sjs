@@ -30,7 +30,7 @@ if (uri) {
         xdmp.setResponseContentType('text/html');
         const params = db.parseURI(uri);
         xdmp.log('lookup: params = ' + JSON.stringify(params));
-        response = xdmp.xsltInvoke('judgment.xsl', doc, params, { template: 'page' });
+        response = xdmp.xsltInvoke('judgment1.xsl', doc, params, { template: 'page' });
     } else {
         xdmp.setResponseCode(404, 'Not Found');
         xdmp.setResponseContentType('text/plain');
