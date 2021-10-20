@@ -41,4 +41,10 @@ url.match(/^\/pretty.xsl$/) ?
 url.match(/^\/[a-z]+\/[a-z]+\/\d+\/\d+\/data\.html$/) ?
     'html0.xqy?uri=' + url.substring(0, url.length - 10) :
 
+url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/test$/) ?
+    'test.xqy?uri=' + url.substring(1, url.lastIndexOf('/')) :
+
+url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/test\/data\.xml$/) ?
+    'test.xqy?uri=' + url.substring(1, url.length - 14) + '&raw=true' :
+
 '400.sjs?uri=' + url

@@ -22,9 +22,10 @@ body { margin: 0 }
 
 body > header { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 0 1in 12pt 1in; background-color: var(--color); font-family: var(--font) }
 body > header > div { display:flex; width:calc(100% - 2in); justify-content: space-between; align-items: baseline }
-body > header h1 { margin-bottom: 0.5em }
+body > header h1 { margin-bottom: 0.25em }
 #search-form, #lookup-form { margin-bottom: 0 }
 #search-form > input[name='q'] { width: 40ch }
+#middle-header { width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 #lookup-form > input[name='cite'] { width: 30ch }
 
 body > #content { margin-top: 128px; padding: 0 1in 12pt 1in }
@@ -68,9 +69,10 @@ mark { padding: 0 2pt; background-color: var(--color) }
                     <xsl:call-template name="search-form" />
                 </div>
                 <div>
-                    <div class="breadcrumbs">
+                    <div id="breadcrumbs">
                         <xsl:call-template name="breadcrumbs" />
                     </div>
+                    <xsl:call-template name="middle-header" />
                     <xsl:call-template name="lookup-form" />
                 </div>
             </header>
@@ -89,7 +91,7 @@ mark { padding: 0 2pt; background-color: var(--color) }
 
 <xsl:template name="search-form">
     <form id="search-form" action="/search">
-        <input type="text" name="q" autofocus="true" placeholder="search terms" />
+        <input type="text" name="q" placeholder="search terms" />
         <input type="submit" value="Search" />
         <a href="/search" style="display:inline-block;margin-left:3pt;font-size:smaller">Advanced</a>
     </form>
@@ -98,6 +100,8 @@ mark { padding: 0 2pt; background-color: var(--color) }
 <xsl:template name="breadcrumbs">
     <xsl:text>&#160;</xsl:text>
 </xsl:template>
+
+<xsl:template name="middle-header" />
 
 <xsl:template name="lookup-form">
     <form id="lookup-form" action="/lookup">

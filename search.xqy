@@ -44,12 +44,8 @@ let $query2 := if ($party) then cts:element-word-query(fn:QName('http://docs.oas
 let $query3 := if ($collection) then cts:directory-query(fn:concat('/', $collection, '/'), 'infinity') else ()
 let $query4 := if ($court) then cts:element-value-query(fn:QName('https:/judgments.gov.uk/', 'court'), $court, ('case-insensitive')) else ()
 let $query5 := if ($judge) then cts:element-word-query(fn:QName('http://docs.oasis-open.org/legaldocml/ns/akn/3.0', 'judge'), $judge) else ()
-let $query6 := if (exists($from)) then
-    let $ref := cts:path-reference('akn:FRBRWork/akn:FRBRdate/@date', 'type=date', map:map()=> map:with('akn', 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0'))
-    return cts:range-query($ref, '>=', $from) else ()
-let $query7 := if (exists($to)) then
-    let $ref := cts:path-reference('akn:FRBRWork/akn:FRBRdate/@date', 'type=date', map:map()=> map:with('akn', 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0'))
-    return cts:range-query($ref, '<=', $to) else ()
+let $query6 := if (empty($from)) then () else cts:path-range-query('akn:FRBRWork/akn:FRBRdate/@date', '>=', $from)
+let $query7 := if (empty($to)) then () else cts:path-range-query('akn:FRBRWork/akn:FRBRdate/@date', '<=', $to)
 let $queries := ( $query1, $query2, $query3, $query4, $query5, $query6, $query7 )
 let $query := cts:and-query($queries)
 
@@ -86,4 +82,8 @@ let $search-options := <options xmlns="http://marklogic.com/appservices/search">
 </options>
 
 let $results := search:resolve($query, $search-options, $start, $page-size)
+let $total as xs:integer := xs:integer($results/@total)
+let $pages as xs:integer := if ($total mod $page-size eq 0) then $total idiv $page-size else $total idiv $page-size + 1
+let $params := $params => map:with('pages', $pages)
+
 return xdmp:xslt-invoke('search.xsl', $results, $params)

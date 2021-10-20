@@ -34,6 +34,14 @@
 	</span>
 </xsl:template>
 
+<xsl:template name="middle-header">
+	<div id="middle-header">
+		<span class="title">
+			<xsl:value-of select="$title" />
+		</span>
+	</div>
+</xsl:template>
+
 <xsl:template name="content">
 	<div style="position:absolute;left:1em">
 		<span style="display:inline-block;padding:3pt;background-color: var(--color);color:gray">

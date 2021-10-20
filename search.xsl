@@ -18,6 +18,7 @@
 <xsl:param name="order" as="xs:string?" />
 <xsl:param name="page" as="xs:integer" />
 <xsl:param name="page-size" as="xs:integer" />
+<xsl:param name="pages" as="xs:integer" />
 
 <xsl:variable name="all-collections" as="xs:string+">
     <xsl:sequence select="'ewca/civ'" />
@@ -252,12 +253,7 @@
             <div>Order by:</div>
             <div>
                 <select name="order" style="width:114pt">
-                    <option value="relevance">
-                        <xsl:if test="$order = 'relevance'">
-                            <xsl:attribute name="selected" />
-                        </xsl:if>
-                        <xsl:text>Relevance</xsl:text>
-                    </option>
+                    <option value="">Relevance</option>
                     <option value="date">
                         <xsl:if test="$order = 'date'">
                             <xsl:attribute name="selected" />
@@ -324,6 +320,8 @@
                 <span style="display:inline-block;margin-left:1ch">
                     <xsl:text>Page </xsl:text>
                     <xsl:value-of select="$page" />
+                    <xsl:text> of </xsl:text>
+                    <xsl:value-of select="$pages" />
                 </span>
                 <form action="/search" style="display:inline-block;margin-left:1ch">
                     <xsl:if test="$q">
@@ -355,7 +353,7 @@
                         <input type="hidden" name="page-size" value="{ $page-size }" />
                     </xsl:if>
                     <input type="submit" value="Next &gt;">
-                        <xsl:if test="count(search:result) lt $page-size">
+                        <xsl:if test="$page eq $pages"><!-- count(search:result) lt $page-size -->
                             <xsl:attribute name="disabled" />
                         </xsl:if>
                     </input>
@@ -416,6 +414,13 @@
             <xsl:with-param name="value" select="$to" />
         </xsl:call-template>
     </xsl:if>
+    <xsl:if test="$order = ('date', '-date')">
+        <xsl:call-template name="pill">
+            <xsl:with-param name="param" select="'order'" />
+            <xsl:with-param name="label" select="'order-by'" />
+            <xsl:with-param name="value" select="$order" />
+        </xsl:call-template>
+    </xsl:if>
 </xsl:template>
 
 <xsl:template name="pill">
@@ -455,7 +460,7 @@
                     <xsl:if test="exists($to) and $param != 'to'">
                         <xsl:sequence select="concat( 'to=', encode-for-uri(string($to)) )" />
                     </xsl:if>
-                    <xsl:if test="$order">
+                    <xsl:if test="$order and $param != 'order'">
                         <xsl:sequence select="concat( 'order=', encode-for-uri($order) )" />
                     </xsl:if>
                 </xsl:variable>
@@ -489,7 +494,7 @@
                 </span>
             </a>
         </div>
-        <xsl:if test="exists(search:snippet/search:match/node())">
+        <xsl:if test="exists(search:snippet/search:match[not(ends-with(@path,'court'))]/node())">
             <ul class="snippets">
                 <xsl:apply-templates />
             </ul>
@@ -502,7 +507,7 @@
 </xsl:template>
 
 <xsl:template match="search:match">
-    <xsl:if test="exists(child::node())">
+    <xsl:if test="not(ends-with(@path,'court')) and exists(child::node())">
         <li class="snippet">
             <xsl:apply-templates />
         </li>
