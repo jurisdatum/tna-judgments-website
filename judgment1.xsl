@@ -44,10 +44,22 @@
 
 <xsl:template name="content">
 	<div style="position:absolute;left:1em">
-		<span style="display:inline-block;padding:3pt;background-color: var(--color);color:gray">
+		<span style="display:inline-block;padding:3pt;background-color:var(--color);color:gray">
 			<a href="/{ $collection }/{ $year }/{ $number }/data.xml?pretty=true">XML</a>
 		</span>
 	</div>
+	<xsl:variable name="attachments" as="element()*" select="/akomaNtoso/judgment/meta/references/hasAttachment" />
+	<xsl:if test="exists($attachments)">
+		<div class="attachments">
+			<xsl:for-each select="$attachments">
+				<p class="attachment" style="text-align:center">
+					<a href="{ @href }" target="_blank" style="padding:3pt 6pt;background-color:var(--color);font-family:var(--font)">
+						<xsl:value-of select="@showAs" />
+					</a>
+				</p>
+			</xsl:for-each>
+		</div>
+	</xsl:if>
 	<xsl:apply-templates select="/akomaNtoso/judgment" />
 </xsl:template>
 
