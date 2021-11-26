@@ -5,7 +5,7 @@ url.match(/^\/$/) ? 'index.sjs' :
 
 // url.match(/^\/test\?/) ? 'test.sjs' + url.substring(5):
 
-url == '/search' ?
+url === '/search' ?
     'search.xqy' :
 
 url.match(/^\/search\?/) ?
@@ -20,6 +20,8 @@ url.match(/^\/[a-z]+(\/[a-z]+)?$/) ?
 url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+$/) ?
     'browse.sjs?collection=' + url.substring(1, url.lastIndexOf('/')) + '&year=' + url.substring(url.lastIndexOf('/') + 1) :
 
+url === '/data.json' ?
+    'list.sjs' :
 url.match(/^\/[a-z]+(\/[a-z]+)?(\/\d+)?\/data\.json$/) ?
     'list.sjs?collection=' + url.substring(1, url.length - 10) :
 
@@ -35,10 +37,13 @@ url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/data\.xml$/) ?
 url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/data\.xml\?/) ?
     'xml1.xqy?uri=' + url.substring(0, url.indexOf('?')) + '&' + url.substring(url.indexOf('?') + 1) :
 
+url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/attachment\/\d+\.pdf$/) ?
+    'attachment.xqy?url=' + url :
+
 url.match(/^\/pretty.xsl$/) ?
     'pretty.xsl' :
 
-url.match(/^\/[a-z]+\/[a-z]+\/\d+\/\d+\/data\.html$/) ?
+url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/data\.html$/) ?
     'html0.xqy?uri=' + url.substring(0, url.length - 10) :
 
 url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/test$/) ?
