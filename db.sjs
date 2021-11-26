@@ -8,6 +8,10 @@ const dateRef = cts.pathReference('akn:FRBRWork/akn:FRBRdate/@date', [ 'type=dat
 
 const orderByDate = cts.indexOrder(dateRef, ['descending']);
 
+const numberRef = cts.pathReference('akn:FRBRWork/akn:FRBRnumber/@value', [ 'type=int' ], { akn: 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0' });
+
+const orderByNumber = cts.indexOrder(numberRef, ['ascending']);
+
 exports.fetch = function(query, order, page, pageSize) {
     order = order || orderByDate;
     page = page || 1;
@@ -39,7 +43,7 @@ exports.getLastYearInCollection = function(collection) {
 
 exports.fetchAllJudgmentsInCollectionWithYear = function(collection, year) {
     const query = cts.directoryQuery([ '/' + collection + '/' + year + '/' ]);
-    return cts.search(query, orderByDate);
+    return cts.search(query, orderByNumber);
 };
 
 exports.countAllDocuments = function() {
@@ -56,10 +60,7 @@ exports.countDocumentsInCollection = function(collection, year) {
     if (year) {
         const query = cts.directoryQuery('/' + collection + '/' + year + '/', '1');
         return fn.count(cts.search(query));
-        // return cts.estimate(query);
     } else {
         return fn.count(fn.collection(collection));
-        // const query = cts.collectionQuery([collection]);
-        // return cts.estimate(query);
     }
 };
