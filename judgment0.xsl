@@ -7,14 +7,16 @@
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	exclude-result-prefixes="html math xs">
 
-<xsl:strip-space elements="*" />
-
 <xsl:output method="html" encoding="utf-8" indent="yes" include-content-type="no" />
 <!-- doctype-system="about:legacy-compat" -->
 
+<xsl:variable name="doc-id" as="xs:string">
+	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRthis/@value" />
+</xsl:variable>
 <xsl:variable name="title" as="xs:string">
 	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRname/@value" />
 </xsl:variable>
+<xsl:variable name="image-base" as="xs:string" select="'https://judgment-images.s3.eu-west-2.amazonaws.com/'" />
 
 <xsl:template match="akomaNtoso">
 	<xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html&gt;
@@ -87,7 +89,7 @@ body { padding: 1cm 1in }
 	</xsl:attribute>
 </xsl:template>
 
-<xsl:template match="level | paragraph | blockContainer">
+<xsl:template match="level | paragraph">
 	<section>
 		<xsl:call-template name="class" />
 		<xsl:apply-templates select="@* except @class" />
@@ -103,11 +105,41 @@ body { padding: 1cm 1in }
 	</section>
 </xsl:template>
 
+<xsl:template match="blockContainer">
+	<section>
+		<xsl:call-template name="class" />
+		<xsl:apply-templates select="@* except @class" />
+		<xsl:apply-templates select="* except num" />
+	</section>
+</xsl:template>
+
+<xsl:template match="blockContainer/p[1]">
+	<p>
+		<xsl:apply-templates select="@*" />
+		<xsl:apply-templates select="preceding-sibling::num" />
+		<xsl:apply-templates />
+	</p>
+</xsl:template>
+
 <xsl:template match="p | span | a">
 	<xsl:element name="{ local-name() }">
 		<xsl:apply-templates select="@*" />
 		<xsl:apply-templates />
 	</xsl:element>
+</xsl:template>
+
+<xsl:template match="block">
+	<p>
+		<xsl:attribute name="class">
+			<xsl:value-of select="@name" />
+			<xsl:if test="@class">
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="@class" />
+			</xsl:if>
+		</xsl:attribute>
+		<xsl:apply-templates select="@* except @name, @class" />
+		<xsl:apply-templates />
+	</p>
 </xsl:template>
 
 <xsl:template match="num | heading">
@@ -126,7 +158,7 @@ body { padding: 1cm 1in }
 	</span>
 </xsl:template>
 
-<xsl:template match="party | judge | lawyer">
+<xsl:template match="party | role | judge | lawyer">
 	<span>
 		<xsl:call-template name="class" />
 		<xsl:apply-templates select="@* except @class" />
@@ -135,10 +167,15 @@ body { padding: 1cm 1in }
 </xsl:template>
 
 <xsl:template match="img">
-	<xsl:element name="{ local-name() }">
+	<img>
 		<xsl:apply-templates select="@*" />
 		<xsl:apply-templates />
-	</xsl:element>
+	</img>
+</xsl:template>
+<xsl:template match="img/@src">
+	<xsl:attribute name="src">
+		<xsl:sequence select="concat($image-base, $doc-id, '/', .)" />
+	</xsl:attribute>
 </xsl:template>
 
 <xsl:template match="br">
