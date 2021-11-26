@@ -40,7 +40,12 @@ let $params := map:map()
     => map:with('page-size', $page-size)
 
 let $query1 := if ($q) then cts:word-query($q) else ()
-let $query2 := if ($party) then cts:element-word-query(fn:QName('http://docs.oasis-open.org/legaldocml/ns/akn/3.0', 'party'), $party) else ()
+let $query2 := if ($party) then
+    cts:or-query((
+        cts:element-word-query(fn:QName('http://docs.oasis-open.org/legaldocml/ns/akn/3.0', 'party'), $party),
+        cts:element-attribute-word-query(fn:QName('http://docs.oasis-open.org/legaldocml/ns/akn/3.0', 'FRBRname'), fn:QName('', 'value'), $party)
+    ))
+else ()
 let $query3 := if ($collection) then cts:directory-query(fn:concat('/', $collection, '/'), 'infinity') else ()
 let $query4 := if ($court) then cts:element-value-query(fn:QName('https:/judgments.gov.uk/', 'court'), $court, ('case-insensitive')) else ()
 let $query5 := if ($judge) then cts:element-word-query(fn:QName('http://docs.oasis-open.org/legaldocml/ns/akn/3.0', 'judge'), $judge) else ()
