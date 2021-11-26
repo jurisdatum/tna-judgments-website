@@ -3,13 +3,13 @@ const db = require('db.sjs');
 
 const collection = xdmp.getRequestField('collection');
 
-const query = cts.directoryQuery('/' + collection + '/', 'infinity');
+const path = '/' + ( collection ? collection + '/' : '' );
 
-const docs = cts.search(query);
+const query = cts.directoryQuery(path, 'infinity');
 
-const uris = Sequence.from(docs, function(doc) { return fn.documentUri(doc).toString(); });
+const uris = cts.uris('', [], query);
 
-const ids = Sequence.from(uris, function(uri) { return uri.substring(1, uri.length - 4); });
+const ids = Sequence.from(uris, { mapFn: function(uri) { return uri.toString().substring(1, uri.toString().length - 4); }, sequenceLimit: fn.count(uris).toString() });
 
 xdmp.setResponseContentType('application/json');
 
