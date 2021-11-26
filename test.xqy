@@ -7,7 +7,7 @@ declare variable $raw as xs:boolean := xdmp:get-request-field('raw', 'false') = 
 
 let $doc := fn:doc($uri)
 
-let $schema := <schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2" defaultPhase="publication" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sqf="http://www.schematron-quickfix.com/validator/process" xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
+let $schema := <schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2" defaultPhase="publication" xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0">
 
 <ns prefix="akn" uri="http://docs.oasis-open.org/legaldocml/ns/akn/3.0" />
 
@@ -29,14 +29,18 @@ let $schema := <schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding
 <pattern id="court-pattern">
     <rule context="akn:meta">
         <assert test="exists(akn:proprietary/*:court)">There is no court</assert>
-        <report test="exists(akn:proprietary/*:court)" id="court" role="info">The court is <value-of select="akn:proprietary/*:court"/></report>
+    </rule>
+    <rule context="akn:proprietary/*:court">
+        <report test="true()" id="court" role="info">The court is <value-of select="."/></report>
     </rule>
 </pattern>
 
 <pattern id="date-pattern">
     <rule context="akn:FRBRWork">
         <assert test="exists(akn:FRBRdate)">There is no date</assert>
-        <report test="exists(akn:FRBRdate)" id="date" role="info">The date is <value-of select="akn:FRBRdate/@date"/></report>
+    </rule>
+    <rule context="akn:FRBRWork/akn:FRBRdate">
+        <report test="true()" id="date" role="info">The date is <value-of select="@date"/></report>
     </rule>
 </pattern>
 
@@ -44,14 +48,18 @@ let $schema := <schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding
     <rule context="akn:header">
         <let name="cites" value="descendant::akn:neutralCitation" />
         <assert test="exists($cites)">There is no neutral citation</assert>
-        <report test="exists($cites)" id="cite" role="info">The neutral citation is <value-of select="$cites[1]"/></report>
+    </rule>
+    <rule context="akn:neutralCitation">
+        <report test="true()" id="cite" role="info">The neutral citation is <value-of select="."/></report>
     </rule>
 </pattern>
 
 <pattern id="name-pattern">
     <rule context="akn:FRBRWork">
         <assert test="exists(akn:FRBRname)">There is no case name</assert>
-        <report test="exists(akn:FRBRname)" id="case-name" role="info">The case name is <value-of select="akn:FRBRname/@value"/></report>
+    </rule>
+    <rule context="akn:FRBRWork/akn:FRBRname">
+        <report test="true()" id="case-name" role="info">The case name is <value-of select="@value"/></report>
     </rule>
 </pattern>
 
