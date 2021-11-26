@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
+<xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
     xpath-default-namespace="http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs">
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:uk="https:/judgments.gov.uk/"
+    exclude-result-prefixes="xs uk">
 
 <xsl:output method="html" encoding="utf-8" indent="yes" include-content-type="no" /> <!-- doctype-system="about:legacy-compat" -->
 
@@ -133,7 +135,7 @@ mark { padding: 0 2pt; background-color: var(--color) }
 <xsl:template match="/" mode="row">
     <xsl:variable name="uri" as="xs:string" select="akomaNtoso/judgment/meta/identification/FRBRWork/FRBRthis/@value" />
     <xsl:variable name="name" as="xs:string" select="akomaNtoso/judgment/meta/identification/FRBRWork/FRBRname/@value" />
-    <xsl:variable name="cite" as="xs:string" select="(akomaNtoso/judgment/header//neutralCitation)[1]" />
+    <xsl:variable name="cite" as="xs:string" select="(akomaNtoso/judgment/meta/proprietary/uk:cite, akomaNtoso/judgment/header//neutralCitation)[1]" />
     <li>
         <a href="/{ $uri }">
             <xsl:value-of select="$name" />
@@ -143,4 +145,4 @@ mark { padding: 0 2pt; background-color: var(--color) }
     </li>
 </xsl:template>
 
-</xsl:stylesheet>
+</xsl:transform>
