@@ -57,6 +57,8 @@ ul.snippets { margin-top: 3pt; margin-bottom: 9pt }
 
 mark { padding: 0 2pt; background-color: var(--color) }
 
+article + article { margin-top: 1in }
+
 <xsl:call-template name="style" />
             </style>
         </head>

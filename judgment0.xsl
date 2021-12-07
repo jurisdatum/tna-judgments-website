@@ -7,8 +7,9 @@
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	exclude-result-prefixes="html math xs">
 
-<xsl:output method="html" encoding="utf-8" indent="yes" include-content-type="no" />
-<!-- doctype-system="about:legacy-compat" -->
+<xsl:output method="html" encoding="utf-8" indent="no" include-content-type="no" /><!-- doctype-system="about:legacy-compat" -->
+
+<xsl:strip-space elements="*" />
 
 <xsl:variable name="doc-id" as="xs:string">
 	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRthis/@value" />
@@ -42,41 +43,100 @@ body { padding: 1cm 1in }
 <xsl:template match="meta" />
 
 <xsl:template name="style">
-	<xsl:analyze-string select="/akomaNtoso/judgment/meta/presentation/html:style" regex="(judgment|body) (.+)">
-		<xsl:matching-substring>
-			<xsl:text>#judgment </xsl:text>
-			<xsl:value-of select="regex-group(2)" />
-		</xsl:matching-substring>
-		<xsl:non-matching-substring>
-			<xsl:analyze-string select="." regex="(.+)">
-				<xsl:matching-substring>
-					<xsl:text>#judgment </xsl:text>
-					<xsl:value-of select="regex-group(1)" />
-				</xsl:matching-substring>
-				<xsl:non-matching-substring>
-					<xsl:value-of select="." />
-				</xsl:non-matching-substring>
-			</xsl:analyze-string>
-		</xsl:non-matching-substring>
-	</xsl:analyze-string>
-#judgment .tab { display: inline-block; width: 0.25in }
-#judgment section { position: relative }
-#judgment h2 { font-size: inherit; font-weight: normal }
-#judgment h2.floating { position: absolute; margin-top: 0 }
-#judgment .num { display: inline-block; padding-right: 1em }
-#judgment td { position: relative; min-width: 2em; padding-left: 1em; padding-right: 1em }
-#judgment td > .num { left: -2em }
-#judgment table { margin: 0 auto }
-#judgment .fn { vertical-align: super; font-size: small }
-#judgment .footnote > p > .marker { vertical-align: super; font-size: small }
+	<xsl:apply-templates select="/akomaNtoso/judgment/meta/presentation/html:style" />
+	<xsl:apply-templates select="/akomaNtoso/judgment/attachments/attachment/doc/meta/presentation/html:style" />
+</xsl:template>
+
+<xsl:template match="html:style">
+	<xsl:variable name="selector1" as="xs:string">
+		<xsl:variable name="raw" as="xs:string" select="normalize-space(substring-before(., '{'))" />
+		<xsl:choose>
+			<xsl:when test="starts-with($raw, '#')">
+				<xsl:sequence select="$raw" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:sequence select="'#judgment'" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	<xsl:for-each select="tokenize(., '\n')">
+		<xsl:choose>
+			<xsl:when test="matches(., '^\s*$')" />
+			<xsl:when test="matches(., '^\s*#')">
+				<xsl:value-of select="." />
+			</xsl:when>
+			<xsl:when test="matches(., '^\s*\.')">
+				<xsl:value-of select="$selector1" />
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="." />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:variable name="selector" as="xs:string" select="substring-before(., '{')" />
+				<xsl:variable name="value" as="xs:string" select="concat('{', substring-after(., '{'))" />
+				<xsl:value-of select="$selector1" />
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="$value" />
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>
+</xsl:text>
+	</xsl:for-each>
+<xsl:value-of select="$selector1" /> .tab { display: inline-block; width: 0.25in }
+<xsl:value-of select="$selector1" /> section { position: relative }
+<xsl:value-of select="$selector1" /> h2 { font-size: inherit; font-weight: normal }
+<xsl:value-of select="$selector1" /> h2.floating { position: absolute; margin-top: 0 }
+<xsl:value-of select="$selector1" /> .num { display: inline-block; padding-right: 1em }
+<xsl:value-of select="$selector1" /> td { position: relative; min-width: 2em; padding-left: 1em; padding-right: 1em }
+<xsl:value-of select="$selector1" /> td > .num { left: -2em }
+<xsl:value-of select="$selector1" /> table { margin: 0 auto }
+<xsl:value-of select="$selector1" /> .fn { vertical-align: super; font-size: small }
+<xsl:value-of select="$selector1" /> .footnote > p > .marker { vertical-align: super; font-size: small }
 
 </xsl:template>
 
 <xsl:template match="judgment">
 	<article id="judgment">
 		<xsl:apply-templates />
+		<xsl:apply-templates select="attachments/attachment/doc[@name='annex']" />
+		<xsl:call-template name="footnotes" />
+		<xsl:for-each select="attachments/attachment/doc[@name='annex']">
+			<xsl:call-template name="footnotes" />
+		</xsl:for-each>
+	</article>
+	<xsl:apply-templates select="attachments/attachment/doc[@name='attachment']" />
+</xsl:template>
+
+<xsl:template match="attachments" />
+
+<xsl:template match="coverPage | header">
+	<div class="{ local-name() }">
+		<xsl:apply-templates />
+	</div>
+</xsl:template>
+
+<xsl:template match="judgmentBody">
+	<div class="body">
+		<xsl:apply-templates />
+	</div>
+</xsl:template>
+
+<xsl:template match="doc[@name='annex']">
+	<section id="{ @name }{ count(../preceding-sibling::*) + 1 }">
+		<xsl:apply-templates />
+	</section>
+</xsl:template>
+
+<xsl:template match="doc[@name='attachment']">
+	<article id="{ @name }{ count(../preceding-sibling::*) + 1 }">
+		<xsl:apply-templates />
 		<xsl:call-template name="footnotes" />
 	</article>
+</xsl:template>
+
+<xsl:template match="doc[@name='attachment']/mainBody">
+	<div class="body">
+		<xsl:apply-templates />
+	</div>
 </xsl:template>
 
 <xsl:template name="class">
@@ -226,10 +286,10 @@ body { padding: 1cm 1in }
 </xsl:template>
 
 <xsl:template name="footnotes">
-	<xsl:variable name="footnotes" select="//authorialNote" />
+	<xsl:variable name="footnotes" select="descendant::authorialNote" />
 	<xsl:if test="$footnotes">
-		<hr style="margin-top:2em" />
 		<footer>
+			<hr style="margin-top:2em" />
 			<xsl:apply-templates select="$footnotes" mode="footnote" />
 		</footer>
 	</xsl:if>
