@@ -2,14 +2,15 @@
 
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
 	xpath-default-namespace="http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
+	xmlns:uk="https:/judgments.gov.uk/"
 	xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:math="http://www.w3.org/1998/Math/MathML"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	exclude-result-prefixes="html math xs">
+	exclude-result-prefixes="uk html math xs">
 
 <xsl:output method="html" encoding="utf-8" indent="no" include-content-type="no" /><!-- doctype-system="about:legacy-compat" -->
 
-<xsl:strip-space elements="*" />
+<!-- <xsl:strip-space elements="*" /> -->
 
 <xsl:variable name="doc-id" as="xs:string">
 	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRthis/@value" />
@@ -88,9 +89,11 @@ body { padding: 1cm 1in }
 <xsl:value-of select="$selector1" /> .num { display: inline-block; padding-right: 1em }
 <xsl:value-of select="$selector1" /> td { position: relative; min-width: 2em; padding-left: 1em; padding-right: 1em }
 <xsl:value-of select="$selector1" /> td > .num { left: -2em }
-<xsl:value-of select="$selector1" /> table { margin: 0 auto }
+<xsl:value-of select="$selector1" /> table { margin: 0 auto; width: 100%; border-collapse: collapse }
+<xsl:value-of select="$selector1" /> .header table { table-layout: fixed }
 <xsl:value-of select="$selector1" /> .fn { vertical-align: super; font-size: small }
 <xsl:value-of select="$selector1" /> .footnote > p > .marker { vertical-align: super; font-size: small }
+<xsl:value-of select="$selector1" /> .restriction { color: red }
 
 </xsl:template>
 
@@ -164,6 +167,8 @@ body { padding: 1cm 1in }
 		<xsl:apply-templates select="* except (num, heading)" />
 	</section>
 </xsl:template>
+
+<!-- <xsl:template match="hcontainer[@name='tableOfContents']" /> -->
 
 <xsl:template match="blockContainer">
 	<section>
@@ -255,10 +260,58 @@ body { padding: 1cm 1in }
 
 <!-- tables -->
 
-<xsl:template match="table | tr | td">
+<xsl:template match="table">
+	<table>
+		<xsl:copy-of select="@class | @style" />
+		<xsl:if test="exists(@uk:widths)">
+			<colgroup>
+				<xsl:for-each select="tokenize(@uk:widths, ' ')">
+					<col style="width:{.}" />
+				</xsl:for-each>
+			</colgroup>
+		</xsl:if>
+		<tbody>
+			<xsl:apply-templates />
+		</tbody>
+	</table>
+</xsl:template>
+
+<xsl:template match="tr | td">
 	<xsl:element name="{ local-name() }">
+		<xsl:copy-of select="@*" />
 		<xsl:apply-templates />
 	</xsl:element>
+</xsl:template>
+
+
+<!-- tables of contents -->
+
+<xsl:template match="toc">
+	<div>
+		<xsl:attribute name="class">
+			<xsl:value-of select="local-name()" />
+			<xsl:if test="@class">
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="@class" />
+			</xsl:if>
+		</xsl:attribute>
+		<xsl:apply-templates select="@* except @class" />
+		<xsl:apply-templates />
+	</div>
+</xsl:template>
+
+<xsl:template match="tocItem">
+	<p class="toc">
+		<xsl:attribute name="class">
+			<xsl:value-of select="local-name()" />
+			<xsl:if test="@class">
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="@class" />
+			</xsl:if>
+		</xsl:attribute>
+		<xsl:apply-templates select="@* except @class" />
+		<xsl:apply-templates />
+	</p>
 </xsl:template>
 
 
