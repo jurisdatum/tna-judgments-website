@@ -170,11 +170,29 @@
                             </xsl:if>
                             <xsl:text>Chancery Division</xsl:text>
                         </option>
+                        <option value="EWHC-Chancery-BusinessAndProperty">
+                            <xsl:if test="$court = 'EWHC-Chancery-BusinessAndProperty'">
+                                <xsl:attribute name="selected" />
+                            </xsl:if>
+                            <xsl:text>Business &amp; Property</xsl:text>
+                        </option>
                         <option value="EWHC-Chancery-Business">
                             <xsl:if test="$court = 'EWHC-Chancery-Business'">
                                 <xsl:attribute name="selected" />
                             </xsl:if>
                             <xsl:text>Business List</xsl:text>
+                        </option>
+                        <option value="EWHC-Chancery-Financial">
+                            <xsl:if test="$court = 'EWHC-Chancery-Financial'">
+                                <xsl:attribute name="selected" />
+                            </xsl:if>
+                            <xsl:text>Financial List</xsl:text>
+                        </option>
+                        <option value="EWHC-Chancery-IntellectualProperty">
+                            <xsl:if test="$court = 'EWHC-Chancery-IntellectualProperty'">
+                                <xsl:attribute name="selected" />
+                            </xsl:if>
+                            <xsl:text>IP List</xsl:text>
                         </option>
                         <option value="EWHC-Chancery-InsolvencyAndCompanies">
                             <xsl:if test="$court = 'EWHC-Chancery-InsolvencyAndCompanies'">
