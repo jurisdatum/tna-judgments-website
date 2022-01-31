@@ -158,9 +158,16 @@ body { padding: 1cm 1in }
 		<xsl:apply-templates select="@* except @class" />
 		<xsl:if test="num | heading">
 			<h2>
-				<xsl:if test="not(heading)">
-					<xsl:attribute name="class">floating</xsl:attribute>
-				</xsl:if>
+				<xsl:choose>
+					<xsl:when test="exists(heading/@class)">
+						<xsl:attribute name="class">
+							<xsl:value-of select="heading/@class" />
+						</xsl:attribute>
+					</xsl:when>
+					<xsl:when test="empty(heading)">
+						<xsl:attribute name="class">floating</xsl:attribute>
+					</xsl:when>
+				</xsl:choose>
 				<xsl:apply-templates select="num | heading" />
 			</h2>
 		</xsl:if>
@@ -209,7 +216,9 @@ body { padding: 1cm 1in }
 
 <xsl:template match="num | heading">
 	<span>
-		<xsl:call-template name="class" />
+		<xsl:attribute name="class">
+			<xsl:value-of select="local-name()" />
+		</xsl:attribute>
 		<xsl:apply-templates select="@* except @class" />
 		<xsl:apply-templates />
 	</span>
