@@ -1,7 +1,8 @@
 const uri = xdmp.getRequestField('uri') + '.xml';
 
 const highlight = xdmp.getRequestField('highlight');
-const scope = xdmp.getRequestField('scope', 'full')
+const scope = xdmp.getRequestField('scope', 'full');
+const format = getFormat();
 
 const match = uri.match(/^\/([a-z]+(\/[a-z]+)?)\/(\d+)\/(\d+)/);
 const params = { collection: match[1], year: match[3], number: match[4] };
@@ -21,10 +22,38 @@ function highlightDocument() {
     return doc2.toNode();
 }
 
+function getFormat() {
+    const param = xdmp.getRequestField('format', '').toLowerCase();
+    if (param === 'old')
+        return param;
+    if (param === 'new')
+        return param;
+    return getFormatCookie();
+}
+
+function getFormatCookie() {
+    let header = xdmp.getRequestHeader('Cookie', '').toString();
+    let cookies = header.split(';');
+    const x = (previous, current) => {
+        const a = current.split('=', 2);
+        if (a[0].trim() === 'format')
+            return a[1].trim();
+        return previous;
+    };
+    return cookies.reduce(x, null);
+}
+
 var response;
 if (doc) {
     xdmp.setResponseContentType('text/html');
-    response = xdmp.xsltInvoke('judgment1.xsl', doc, params, { template: 'page' });
+    if (format === 'new')
+        xdmp.addResponseHeader('Set-Cookie', "format=new; path=/");
+    else if (format === 'old')
+        xdmp.addResponseHeader('Set-Cookie', "format=old; path=/");
+    if (format === 'new')
+        response = xdmp.xsltInvoke('judgment3.xsl', doc, params, { template: 'page' });
+    else
+        response = xdmp.xsltInvoke('judgment1.xsl', doc, params, { template: 'page' });
 } else {
     xdmp.setResponseCode(404, 'Not Found');
     xdmp.setResponseContentType('text/plain');

@@ -8,7 +8,7 @@
 	exclude-result-prefixes="html math xs">
 
 <xsl:import href="page.xsl" />
-<xsl:import href="judgment0.xsl" />
+<xsl:import href="judgment2.xsl" />
 
 <xsl:param name="collection" as="xs:string" />
 <xsl:param name="year" as="xs:string" />
@@ -16,6 +16,10 @@
 
 <xsl:template name="title">
 	<xsl:value-of select="$title" />
+</xsl:template>
+
+<xsl:template name="links">
+	<link rel="stylesheet" href="/new-format.css" />
 </xsl:template>
 
 <xsl:template name="breadcrumbs">
@@ -51,7 +55,7 @@
 		</div>
 		<div style="margin-top:1em;width:6ch;text-align:center">
 			<span style="display:inline-block;width:100%;padding:3pt;background-color:var(--color);color:gray">
-				<a href="/{ $collection }/{ $year }/{ $number }?format=new">switch to new HTML format</a>
+				<a href="/{ $collection }/{ $year }/{ $number }?format=old">switch to old HTML format</a>
 			</span>
 		</div>
 	</div>

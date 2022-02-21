@@ -40,6 +40,9 @@ url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/data\.xml\?/) ?
 url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/attachment\/\d+\.pdf$/) ?
     'attachment.xqy?url=' + url :
 
+url.match(/^\/new-format.css$/) ?
+    'new-format.css' :
+
 url.match(/^\/pretty.xsl$/) ?
     'pretty.xsl' :
 

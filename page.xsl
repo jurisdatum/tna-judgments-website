@@ -18,6 +18,7 @@
                 <xsl:call-template name="title" />
             </title>
             <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans" />
+            <xsl:call-template name="links" />
             <style>
 :root { --color: lavender; --font: 'Open Sans', sans-serif }
 body { margin: 0 }
@@ -90,6 +91,8 @@ article + article { margin-top: 1in }
 <xsl:template name="title">
     <xsl:text>Judgments</xsl:text>
 </xsl:template>
+
+<xsl:template name="links" />
 
 <xsl:template name="style" />
 
