@@ -2,11 +2,10 @@
 
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
 	xpath-default-namespace="http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
-	xmlns:uk="https:/judgments.gov.uk/"
 	xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:math="http://www.w3.org/1998/Math/MathML"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	exclude-result-prefixes="uk html math xs">
+	exclude-result-prefixes="html math xs">
 
 <xsl:output method="html" encoding="utf-8" indent="yes" include-content-type="no" /><!-- doctype-system="about:legacy-compat" -->
 
@@ -16,7 +15,18 @@
 <xsl:param name="image-base" as="xs:string" select="'https://judgment-images.s3.eu-west-2.amazonaws.com/'" />
 
 <xsl:variable name="doc-id" as="xs:string">
-	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRthis/@value" />
+	<xsl:variable name="work-uri" as="xs:string">
+		<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRthis/@value" />
+	</xsl:variable>
+	<xsl:variable name="long-form-prefix" as="xs:string" select="'https://caselaw.nationalarchives.gov.uk/id/'" />
+	<xsl:choose>
+		<xsl:when test="starts-with($work-uri, $long-form-prefix)">
+			<xsl:sequence select="substring-after($work-uri, $long-form-prefix)" />
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:sequence select="$work-uri" />
+		</xsl:otherwise>
+	</xsl:choose>
 </xsl:variable>
 <xsl:variable name="title" as="xs:string">
 	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRname/@value" />

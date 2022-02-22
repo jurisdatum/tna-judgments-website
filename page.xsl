@@ -3,8 +3,9 @@
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
     xpath-default-namespace="http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:uk="https:/judgments.gov.uk/"
-    exclude-result-prefixes="xs uk">
+    xmlns:uk1="https:/judgments.gov.uk/"
+    xmlns:uk="https://caselaw.nationalarchives.gov.uk/akn"
+    exclude-result-prefixes="xs uk1 uk">
 
 <xsl:output method="html" encoding="utf-8" indent="yes" include-content-type="no" /> <!-- doctype-system="about:legacy-compat" -->
 
@@ -139,10 +140,21 @@ article + article { margin-top: 1in }
 
 <xsl:template match="/" mode="row">
     <xsl:variable name="uri" as="xs:string" select="akomaNtoso/judgment/meta/identification/FRBRWork/FRBRthis/@value" />
+    <xsl:variable name="long-form-prefix" as="xs:string" select="'https://caselaw.nationalarchives.gov.uk/id/'" />
+    <xsl:variable name="uri-component" as="xs:string">
+        <xsl:choose>
+            <xsl:when test="starts-with($uri, $long-form-prefix)">
+                <xsl:sequence select="substring-after($uri, $long-form-prefix)" />
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="$uri" />
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
     <xsl:variable name="name" as="xs:string" select="akomaNtoso/judgment/meta/identification/FRBRWork/FRBRname/@value" />
-    <xsl:variable name="cite" as="xs:string" select="(akomaNtoso/judgment/meta/proprietary/uk:cite, akomaNtoso/judgment/header//neutralCitation)[1]" />
+    <xsl:variable name="cite" as="xs:string" select="(akomaNtoso/judgment/meta/proprietary/uk1:cite, akomaNtoso/judgment/meta/proprietary/uk:cite, akomaNtoso/judgment/header//neutralCitation)[1]" />
     <li>
-        <a href="/{ $uri }">
+        <a href="/{ $uri-component }">
             <xsl:value-of select="$name" />
             <xsl:text>, </xsl:text>
             <xsl:value-of select="$cite" />

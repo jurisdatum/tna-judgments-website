@@ -3,7 +3,7 @@ xquery version "1.0-ml";
 import module namespace search = "http://marklogic.com/appservices/search" at "/MarkLogic/appservices/search/search.xqy";
 
 declare namespace akn = "http://docs.oasis-open.org/legaldocml/ns/akn/3.0";
-declare namespace uk = "https:/judgments.gov.uk/";
+declare namespace uk = "https://caselaw.nationalarchives.gov.uk";
 
 declare function uk:get-request-int($name as xs:string, $default as xs:integer) as xs:integer {
     let $raw := xdmp:get-request-field($name)
@@ -47,7 +47,10 @@ let $query2 := if ($party) then
     ))
 else ()
 let $query3 := if ($collection) then cts:directory-query(fn:concat('/', $collection, '/'), 'infinity') else ()
-let $query4 := if ($court) then cts:element-value-query(fn:QName('https:/judgments.gov.uk/', 'court'), $court, ('case-insensitive')) else ()
+let $query4 := if ($court) then cts:or-query((
+    cts:element-value-query(fn:QName('https:/judgments.gov.uk/', 'court'), $court, ('case-insensitive')),
+    cts:element-value-query(fn:QName('https://caselaw.nationalarchives.gov.uk/akn', 'court'), $court, ('case-insensitive'))
+)) else ()
 let $query5 := if ($judge) then cts:element-word-query(fn:QName('http://docs.oasis-open.org/legaldocml/ns/akn/3.0', 'judge'), $judge) else ()
 let $query6 := if (empty($from)) then () else cts:path-range-query('akn:FRBRWork/akn:FRBRdate/@date', '>=', $from)
 let $query7 := if (empty($to)) then () else cts:path-range-query('akn:FRBRWork/akn:FRBRdate/@date', '<=', $to)
