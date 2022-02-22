@@ -21,10 +21,10 @@
 <xsl:param name="pages" as="xs:integer" />
 
 <xsl:variable name="all-collections" as="xs:string+">
+    <xsl:sequence select="'uksc'" />
+    <xsl:sequence select="'ukpc'" />
     <xsl:sequence select="'ewca/civ'" />
     <xsl:sequence select="'ewca/crim'" />
-    <xsl:sequence select="'ewcop'" />
-    <xsl:sequence select="'ewfc'" />
     <xsl:sequence select="'ewhc/admin'" />
     <xsl:sequence select="'ewhc/admlty'" />
     <xsl:sequence select="'ewhc/ch'" />
@@ -35,6 +35,8 @@
     <xsl:sequence select="'ewhc/pat'" />
     <xsl:sequence select="'ewhc/qb'" />
     <xsl:sequence select="'ewhc/tcc'" />
+    <xsl:sequence select="'ewcop'" />
+    <xsl:sequence select="'ewfc'" />
 </xsl:variable>
 
 <xsl:template match="search:response">
@@ -86,6 +88,20 @@
             <div>
                 <select name="court" style="width:114pt">
                     <option value="">any</option>
+                    <optgroup label="United Kingdom">
+                        <option value="UKSC">
+                            <xsl:if test="$court = 'UKSC'">
+                                <xsl:attribute name="selected" />
+                            </xsl:if>
+                            <xsl:text>Supreme Court</xsl:text>
+                        </option>
+                        <option value="UKPC">
+                            <xsl:if test="$court = 'UKPC'">
+                                <xsl:attribute name="selected" />
+                            </xsl:if>
+                            <xsl:text>Jud. Comm. of the Privy Council</xsl:text>
+                        </option>
+                    </optgroup>
                     <optgroup label="Court of Appeal">
                         <option value="EWCA-Criminal">
                             <xsl:if test="$court = 'EWCA-Criminal'">
