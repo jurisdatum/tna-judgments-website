@@ -6,6 +6,8 @@ exports.parseURI = function (uri) {
 
 const dateRef = cts.pathReference('akn:FRBRWork/akn:FRBRdate/@date', [ 'type=date' ], { akn: 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0' });
 
+const yearRef = cts.elementReference(fn.QName('https://caselaw.nationalarchives.gov.uk/akn','year'), [ 'type=unsignedInt' ]);
+
 const orderByDate = cts.indexOrder(dateRef, ['descending']);
 
 const numberRef = cts.pathReference('akn:FRBRWork/akn:FRBRnumber/@value', [ 'type=int' ], { akn: 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0' });
@@ -32,13 +34,11 @@ exports.fetchMostRecentTwentyJudgmentsInCollection = function(collection) {
 
 exports.getFirstYearInCollection = function(collection) {
     const query = cts.collectionQuery([collection]);
-    const min = cts.min(dateRef, [], query);
-    return fn.yearFromDate(min);
+    return cts.min(yearRef, [], query);
 }
 exports.getLastYearInCollection = function(collection) {
     const query = cts.collectionQuery([collection]);
-    const max = cts.max(dateRef, [], query);
-    return fn.yearFromDate(max);
+    return cts.max(yearRef, [], query);
 }
 
 exports.fetchAllJudgmentsInCollectionWithYear = function(collection, year) {
