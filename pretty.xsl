@@ -34,6 +34,7 @@ summary::marker { width: 1em; color: gray }
             <xsl:text>&lt;</xsl:text>
             <xsl:value-of select="name(.)" />
         </span>
+        <xsl:call-template name="namespaces" />
         <xsl:apply-templates select="@*" />
         <span class="end-tag">
             <xsl:text>/&gt;</xsl:text>
@@ -47,6 +48,7 @@ summary::marker { width: 1em; color: gray }
             <xsl:text>&lt;</xsl:text>
             <xsl:value-of select="name(.)" />
         </span>
+        <xsl:call-template name="namespaces" />
         <xsl:apply-templates select="@*" />
         <span class="start-tag">
             <xsl:text>&gt;</xsl:text>
@@ -70,6 +72,7 @@ summary::marker { width: 1em; color: gray }
                     <xsl:text>&lt;</xsl:text>
                     <xsl:value-of select="name(.)" />
                 </span>
+                <xsl:call-template name="namespaces" />
                 <xsl:apply-templates select="@*" />
                 <span class="start-tag">
                     <xsl:text>&gt;</xsl:text>
@@ -87,6 +90,35 @@ summary::marker { width: 1em; color: gray }
             </span>
         </details>
     </div>
+</xsl:template>
+
+<xsl:template name="namespaces">
+    <xsl:variable name="above">
+        <xsl:variable name="many">
+            <xsl:for-each select="parent::*/namespace::*">
+                <xsl:value-of select="string(.)" />
+            </xsl:for-each>
+        </xsl:variable>
+        <xsl:value-of select="string($many)" />
+    </xsl:variable>
+    <xsl:for-each select="namespace::*[not(name(.)='xml') and not(contains($above, string(.)))]">
+        <xsl:text> </xsl:text>
+        <span class="attribute-name">
+            <xsl:text>xmlns</xsl:text>
+            <xsl:if test="name(.)">
+                <xsl:text>:</xsl:text>
+            </xsl:if>
+            <xsl:value-of select="name(.)" />
+            <xsl:text>=</xsl:text>
+            <xsl:text>"</xsl:text>
+        </span>
+        <span class="attribute-value">
+            <xsl:value-of select="." />
+        </span>
+        <span class="attribute-name">
+            <xsl:text>"</xsl:text>
+        </span>
+    </xsl:for-each>
 </xsl:template>
 
 <xsl:template match="@*">
