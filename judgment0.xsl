@@ -118,7 +118,7 @@ body { padding: 1cm 1in }
 			<xsl:call-template name="footnotes" />
 		</xsl:for-each>
 	</article>
-	<xsl:apply-templates select="attachments/attachment/doc[@name='attachment']" />
+	<xsl:apply-templates select="attachments/attachment/doc[not(@name='annex')]" />
 </xsl:template>
 
 <xsl:template match="attachments" />
@@ -141,14 +141,27 @@ body { padding: 1cm 1in }
 	</section>
 </xsl:template>
 
-<xsl:template match="doc[@name='attachment']">
-	<article id="{ @name }{ count(../preceding-sibling::*) + 1 }">
+<xsl:template match="doc[not(@name='annex')]">
+	<xsl:variable name="id" as="xs:string">
+		<xsl:choose>
+			<xsl:when test="@name = 'attachment'"> <!-- for backwards compatibility -->
+				<xsl:sequence select="concat(@name, string(count(../preceding-sibling::*) + 1))" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:variable name="work-this" as="xs:string" select="meta/identification/FRBRWork/FRBRthis/@value" />
+				<xsl:variable name="parts" as="xs:string*" select="tokenize($work-this, '/')" />
+				<xsl:variable name="last-two-parts" as="xs:string*" select="subsequence($parts, count($parts) - 1)" />
+				<xsl:sequence select="string-join($last-two-parts, '')" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	<article id="{ $id }">
 		<xsl:apply-templates />
 		<xsl:call-template name="footnotes" />
 	</article>
 </xsl:template>
 
-<xsl:template match="doc[@name='attachment']/mainBody">
+<xsl:template match="doc[not(@name='annex')]/mainBody">
 	<div class="body">
 		<xsl:apply-templates />
 	</div>

@@ -43,7 +43,7 @@
 			<xsl:call-template name="footnotes" />
 		</xsl:for-each>
 	</article>
-	<xsl:apply-templates select="attachments/attachment/doc[@name='attachment']" />
+	<xsl:apply-templates select="attachments/attachment/doc[not(@name='annex')]" />
 </xsl:template>
 
 <xsl:template match="attachments" />
@@ -66,8 +66,8 @@
 	</section>
 </xsl:template>
 
-<xsl:template match="doc[@name='attachment']">
-	<article id="{ @name }{ count(../preceding-sibling::*) + 1 }">
+<xsl:template match="doc[not(@name='annex')]">
+	<article>
 		<xsl:apply-templates />
 		<xsl:call-template name="footnotes" />
 	</article>
