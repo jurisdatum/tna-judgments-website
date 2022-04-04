@@ -37,6 +37,9 @@
     <xsl:sequence select="'ewhc/tcc'" />
     <xsl:sequence select="'ewcop'" />
     <xsl:sequence select="'ewfc'" />
+    <xsl:sequence select="'ukut/iac'" />
+    <xsl:sequence select="'ukut/lc'" />
+    <xsl:sequence select="'ukut/tcc'" />
 </xsl:variable>
 
 <xsl:template match="search:response">
@@ -262,6 +265,34 @@
                         </xsl:if>
                         <xsl:text>Family Court</xsl:text>
                     </option>
+					<optgroup label="Upper Tribunals">
+						<option value="UKUT-IAC">
+                            <xsl:if test="$court = 'UKUT-IAC'">
+                                <xsl:attribute name="selected" />
+                            </xsl:if>
+                            <xsl:text>Immigration and Asylum Chamber</xsl:text>
+                        </option>
+						<option value="UKUT-LC">
+                            <xsl:if test="$court = 'UKUT-LC'">
+                                <xsl:attribute name="selected" />
+                            </xsl:if>
+                            <xsl:text>Lands Chamber</xsl:text>
+                        </option>
+						<option value="UKUT-TCC">
+                            <xsl:if test="$court = 'UKUT-TCC'">
+                                <xsl:attribute name="selected" />
+                            </xsl:if>
+                            <xsl:text>Tax and Chancery Chamber</xsl:text>
+                        </option>
+					</optgroup>
+					<optgroup label="First-tier Tribunals">
+						<option value="UKFTT-TC">
+                            <xsl:if test="$court = 'UKFTT-TC'">
+                                <xsl:attribute name="selected" />
+                            </xsl:if>
+                            <xsl:text>Tax</xsl:text>
+                        </option>
+					</optgroup>
                 </select>
             </div>
         </p>
