@@ -14,6 +14,9 @@ url.match(/^\/search\?/) ?
 url.match(/^\/lookup\?/) ?
     'lookup.sjs' + url.substring(url.indexOf('?')) :
 
+url === '/akn2html' ?
+    'akn2html.xqy' :
+
 url.match(/^\/[a-z]+(\/[a-z]+)?$/) ?
     'collection.sjs?collection=' + url.substring(1) :
 
@@ -48,6 +51,9 @@ url.match(/^\/pretty.xsl$/) ?
 
 url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/data\.html$/) ?
     'html0.xqy?uri=' + url.substring(0, url.length - 10) :
+
+url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/data2.html$/) ?
+    'html2.xqy?uri=' + url.substring(0, url.length - 11) :
 
 url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/test$/) ?
     'test.xqy?uri=' + url.substring(1, url.lastIndexOf('/')) :
