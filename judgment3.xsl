@@ -14,6 +14,10 @@
 <xsl:param name="year" as="xs:string" />
 <xsl:param name="number" as="xs:string" />
 
+<xsl:variable name="title" as="xs:string">
+	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRname/@value" />
+</xsl:variable>
+
 <xsl:template name="title">
 	<xsl:value-of select="$title" />
 </xsl:template>

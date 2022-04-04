@@ -27,7 +27,7 @@
 		</xsl:otherwise>
 	</xsl:choose>
 </xsl:variable>
-<xsl:variable name="title" as="xs:string">
+<xsl:variable name="title" as="xs:string?">
 	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRname/@value" />
 </xsl:variable>
 <xsl:variable name="image-base" as="xs:string" select="'https://judgment-images.s3.eu-west-2.amazonaws.com/'" />
