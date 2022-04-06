@@ -29,10 +29,10 @@ url.match(/^\/[a-z]+(\/[a-z]+)?(\/\d+)?\/data\.json$/) ?
     'list.sjs?collection=' + url.substring(1, url.length - 10) :
 
 url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+$/) ?
-    'html1.sjs?uri=' + url :
+    'html1.xqy?uri=' + url :
 
 url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\?/) ?
-    'html2.sjs?uri=' + url.substring(0, url.indexOf('?')) + '&' + url.substring(url.indexOf('?') + 1) :
+    'html1.xqy?uri=' + url.substring(0, url.indexOf('?')) + '&' + url.substring(url.indexOf('?') + 1) :
 
 url.match(/^\/[a-z]+(\/[a-z]+)?\/\d+\/\d+\/data\.xml$/) ?
     'xml1.xqy?uri=' + url :

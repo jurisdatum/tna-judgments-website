@@ -57,7 +57,7 @@ ul.collections, ul.years, ul.judgments { padding: 0; list-style-type: none }
 .search-result > div > a:hover { text-decoration: none; background-color: var(--color) }
 ul.snippets { margin-top: 3pt; margin-bottom: 9pt }
 
-mark { padding: 0 2pt; background-color: var(--color) }
+mark { background-color: var(--color) }
 
 article + article { margin-top: 1in }
 

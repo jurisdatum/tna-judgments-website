@@ -4,7 +4,8 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:search="http://marklogic.com/appservices/search"
     xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
-    exclude-result-prefixes="xs search akn">
+    xmlns:uk="https://caselaw.nationalarchives.gov.uk/akn"
+    exclude-result-prefixes="xs search akn uk">
 
 <xsl:import href="page.xsl" />
 
@@ -555,7 +556,7 @@
                 </span>
                 <xsl:text>, </xsl:text>
                 <span>
-                    <xsl:value-of select="search:extracted/akn:neutralCitation[1]" />
+                    <xsl:value-of select="search:extracted/uk:cite" />
                 </span>
             </a>
         </div>
@@ -572,11 +573,9 @@
 </xsl:template>
 
 <xsl:template match="search:match">
-    <xsl:if test="not(ends-with(@path,'court')) and exists(child::node())">
-        <li class="snippet">
-            <xsl:apply-templates />
-        </li>
-    </xsl:if>
+    <li class="snippet">
+        <xsl:apply-templates />
+    </li>
 </xsl:template>
 
 <xsl:template match="search:highlight">
