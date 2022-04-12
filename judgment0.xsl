@@ -218,7 +218,7 @@ body { padding: 1cm 1in }
 	</p>
 </xsl:template>
 
-<xsl:template match="p | span | a">
+<xsl:template match="p | span">
 	<xsl:element name="{ local-name() }">
 		<xsl:apply-templates select="@*" />
 		<xsl:apply-templates />
@@ -322,6 +322,16 @@ body { padding: 1cm 1in }
 		<xsl:copy-of select="@*" />
 		<xsl:apply-templates />
 	</xsl:element>
+</xsl:template>
+
+
+<!-- links -->
+
+<xsl:template match="a | ref">
+	<a>
+		<xsl:apply-templates select="@*" />
+		<xsl:apply-templates />
+	</a>
 </xsl:template>
 
 
