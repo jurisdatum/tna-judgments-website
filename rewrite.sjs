@@ -16,6 +16,8 @@ url.match(/^\/lookup\?/) ?
 
 url === '/akn2html' ?
     'akn2html.xqy' :
+url === '/akn2html2' ?
+    'akn2html2.xqy' :
 
 url.match(/^\/[a-z]+(\/[a-z]+)?$/) ?
     'collection.sjs?collection=' + url.substring(1) :
