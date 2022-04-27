@@ -294,6 +294,12 @@
                             <xsl:text>Tax</xsl:text>
                         </option>
 					</optgroup>
+                    <option value="EAT">
+                        <xsl:if test="$court = 'EAT'">
+                            <xsl:attribute name="selected" />
+                        </xsl:if>
+                        <xsl:text>Empl Appeal Trib</xsl:text>
+                    </option>
                 </select>
             </div>
         </p>
