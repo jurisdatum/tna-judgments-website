@@ -9,9 +9,69 @@
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	exclude-result-prefixes="uk1 uk html math xs">
 
-<xsl:output method="html" encoding="utf-8" indent="no" include-content-type="no" /><!-- doctype-system="about:legacy-compat" -->
+<xsl:output method="html" encoding="utf-8" indent="yes" include-content-type="no" />
 
-<!-- <xsl:strip-space elements="*" /> -->
+<xsl:strip-space elements="*" />
+<xsl:preserve-space elements="p block num heading span a courtType date docDate docTitle docketNumber judge lawyer location neutralCitation party role time" />
+
+<xsl:param name="standalone" as="xs:boolean" select="false()" />
+<xsl:param name="image-base" as="xs:string" select="'/'" />
+<xsl:param name="suppress-links" as="xs:boolean" select="true()" />
+
+<!-- functions -->
+
+<xsl:function name="uk:link-is-supported" as="xs:boolean">
+	<xsl:param name="href" as="attribute()?" />
+	<xsl:choose>
+		<xsl:when test="starts-with($href, 'https://www.legislation.gov.uk/')">
+			<xsl:sequence select="true()" />
+		</xsl:when>
+		<xsl:when test="starts-with($href, 'https://caselaw.nationalarchives.gov.uk/')">
+			<xsl:variable name="components" as="xs:string*" select="tokenize(substring-after($href, 'https://caselaw.nationalarchives.gov.uk/'), '/')" />
+			<xsl:choose>
+				<xsl:when test="empty($components[3])">
+					<xsl:sequence select="false()" />
+				</xsl:when>
+				<xsl:when test="$components[1] = ('uksc', 'ukpc')">
+					<xsl:sequence select="$components[2] ge '2014'" />
+				</xsl:when>
+				<xsl:when test="$components[1] = ('ewca', 'ewhc')">
+					<xsl:sequence select="$components[3] ge '2003'" />
+				</xsl:when>
+				<xsl:when test="$components[1] = 'ewcop'">
+					<xsl:sequence select="$components[2] ge '2009'" />
+				</xsl:when>
+				<xsl:when test="$components[1] = 'ewfc'">
+					<xsl:sequence select="$components[2] ge '2014'" />
+				</xsl:when>
+				<xsl:when test="$components[1] = 'ukut'">
+					<xsl:choose>
+						<xsl:when test="$components[2] = 'iac'">
+							<xsl:sequence select="$components[3] ge '2010'" />
+						</xsl:when>
+						<xsl:when test="$components[2] = 'lc'">
+							<xsl:sequence select="$components[3] ge '2015'" />
+						</xsl:when>
+						<xsl:when test="$components[2] = 'tcc'">
+							<xsl:sequence select="$components[3] ge '2017'" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:sequence select="false()" />
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:sequence select="false()" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:sequence select="false()" />
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:function>
+
+<!-- global variables -->
 
 <xsl:variable name="doc-id" as="xs:string">
 	<xsl:variable name="work-uri" as="xs:string">
@@ -27,30 +87,37 @@
 		</xsl:otherwise>
 	</xsl:choose>
 </xsl:variable>
+
 <xsl:variable name="title" as="xs:string?">
 	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRname/@value" />
 </xsl:variable>
-<xsl:variable name="image-base" as="xs:string" select="'https://judgment-images.s3.eu-west-2.amazonaws.com/'" />
+
+<!-- templates -->
 
 <xsl:template match="akomaNtoso">
-	<xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html&gt;
-</xsl:text>
-	<html>
-        <head>
-			<meta charset="utf-8" />
-            <title>
-                <xsl:value-of select="$title" />
-            </title>
-            <style>
-
-body { padding: 1cm 1in }
-				<xsl:call-template name="style" />
-            </style>
-        </head>
-        <body>
-			<xsl:apply-templates />
-        </body>
-	</html>
+	<xsl:choose>
+		<xsl:when test="$standalone">
+			<html>
+				<head>
+					<title>
+						<xsl:value-of select="$title" />
+					</title>
+					<style>
+body { margin: 1cm 1in }
+						<xsl:call-template name="style" />
+					</style>
+				</head>
+				<body>
+					<xsl:apply-templates />
+				</body>
+			</html>
+		</xsl:when>
+		<xsl:otherwise>
+			<div>
+				<xsl:apply-templates />
+			</div>
+		</xsl:otherwise>
+	</xsl:choose>
 </xsl:template>
 
 <xsl:template match="meta" />
@@ -99,10 +166,12 @@ body { padding: 1cm 1in }
 <xsl:value-of select="$selector1" /> h2 { font-size: inherit; font-weight: normal }
 <xsl:value-of select="$selector1" /> h2.floating { position: absolute; margin-top: 0 }
 <xsl:value-of select="$selector1" /> .num { display: inline-block; padding-right: 1em }
-<xsl:value-of select="$selector1" /> td { position: relative; min-width: 2em; padding-left: 1em; padding-right: 1em }
+<xsl:value-of select="$selector1" /> td { position: relative; min-width: 2em; padding-left: 1em; padding-right: 1em; vertical-align: top }
 <xsl:value-of select="$selector1" /> td > .num { left: -2em }
 <xsl:value-of select="$selector1" /> table { margin: 0 auto; width: 100%; border-collapse: collapse }
 <xsl:value-of select="$selector1" /> .header table { table-layout: fixed }
+<xsl:value-of select="$selector1" /> td > p:first-child { margin-top: 0 }
+<xsl:value-of select="$selector1" /> td > p:last-child { margin-bottom: 0 }
 <xsl:value-of select="$selector1" /> .fn { vertical-align: super; font-size: small }
 <xsl:value-of select="$selector1" /> .footnote > p > .marker { vertical-align: super; font-size: small }
 <xsl:value-of select="$selector1" /> .restriction { color: red }
@@ -328,10 +397,17 @@ body { padding: 1cm 1in }
 <!-- links -->
 
 <xsl:template match="a | ref">
-	<a>
-		<xsl:apply-templates select="@*" />
-		<xsl:apply-templates />
-	</a>
+	<xsl:choose>
+		<xsl:when test="not($suppress-links) or uk:link-is-supported(@href)">
+			<a>
+				<xsl:apply-templates select="@*" />
+				<xsl:apply-templates />
+			</a>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:value-of select="." />
+		</xsl:otherwise>
+	</xsl:choose>
 </xsl:template>
 
 
@@ -339,27 +415,15 @@ body { padding: 1cm 1in }
 
 <xsl:template match="toc">
 	<div>
-		<xsl:attribute name="class">
-			<xsl:value-of select="local-name()" />
-			<xsl:if test="@class">
-				<xsl:text> </xsl:text>
-				<xsl:value-of select="@class" />
-			</xsl:if>
-		</xsl:attribute>
+		<xsl:call-template name="class" />
 		<xsl:apply-templates select="@* except @class" />
 		<xsl:apply-templates />
 	</div>
 </xsl:template>
 
 <xsl:template match="tocItem">
-	<p class="toc">
-		<xsl:attribute name="class">
-			<xsl:value-of select="local-name()" />
-			<xsl:if test="@class">
-				<xsl:text> </xsl:text>
-				<xsl:value-of select="@class" />
-			</xsl:if>
-		</xsl:attribute>
+	<p>
+		<xsl:call-template name="class" />
 		<xsl:apply-templates select="@* except @class" />
 		<xsl:apply-templates />
 	</p>

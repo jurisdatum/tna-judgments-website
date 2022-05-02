@@ -16,9 +16,10 @@ declare function html1:get-format() as xs:string? {
 declare function html1:get-format-cookie() as xs:string? {
     let $header := fn:string(xdmp:get-request-header('Cookie', ''))
     let $cookies := fn:tokenize($header, ';')
-    return for $cookie in $cookies
+    let $values := for $cookie in $cookies
         let $a := fn:tokenize($cookie, '=')
         return if (fn:normalize-space($a[1]) = 'format') then fn:normalize-space($a[2]) else ()
+    return $values[1]
 };
 
 let $doc as document-node()? := fn:doc($uri)
@@ -40,6 +41,9 @@ let $params := map:map()
     => map:with('collection', $collection)
     => map:with('year', $year)
     => map:with('number', $number)
+    => map:with('standalone', fn:false())
+    => map:with('image-base', 'https://judgment-images.s3.eu-west-2.amazonaws.com/')
+    => map:with('suppress-links', fn:false())
 let $options := map:map() => map:with('template', 'page')
 return if (html1:get-format() = 'new') then (
     xdmp:set-response-content-type('text/html'),
