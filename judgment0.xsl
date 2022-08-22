@@ -246,7 +246,7 @@ body { margin: 1cm 1in }
 	</xsl:choose>
 </xsl:template>
 
-<xsl:template match="level | paragraph">
+<xsl:template match="level | paragraph | subparagraph">
 	<section>
 		<xsl:call-template name="class" />
 		<xsl:apply-templates select="@* except @class" />

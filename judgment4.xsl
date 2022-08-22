@@ -20,7 +20,7 @@
 			<title>
 				<xsl:value-of select="$title" />
 			</title>
-			<link rel="stylesheet" href="https://parse.judgments.tna.jurisdatum.com/new-format.css" />
+			<link rel="stylesheet" href="https://caselaw.nationalarchives.gov.uk/static/css/main.css" />
 		</head>
 		<body>
 			<xsl:apply-templates />
