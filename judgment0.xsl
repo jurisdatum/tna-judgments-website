@@ -438,6 +438,12 @@ body { margin: 1cm 1in }
 	</span>
 </xsl:template>
 
+<xsl:template match="@eId">
+	<xsl:attribute name="id">
+		<xsl:sequence select="." />
+	</xsl:attribute>
+</xsl:template>
+
 <xsl:template match="@class | @style | @src | @href | @title">
 	<xsl:copy />
 </xsl:template>
