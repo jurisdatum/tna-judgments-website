@@ -256,7 +256,7 @@
 	</xsl:choose>
 </xsl:function>
 
-<xsl:template match="header/p">
+<xsl:template match="header//p">
 	<xsl:choose>
 		<xsl:when test="empty(preceding-sibling::*) and exists(child::img)">
 			<div class="judgment-header__logo">
@@ -356,9 +356,11 @@
 	<xsl:choose>
 		<xsl:when test="exists($styles[starts-with(., 'font-weight:') and not(starts-with(., 'font-weight:normal'))])">
 			<b>
-				<xsl:attribute name="style">
-					<xsl:value-of select="string-join($styles[starts-with(., 'font-weight:')], ';')" />
-				</xsl:attribute>
+				<xsl:if test="exists($styles[starts-with(., 'font-weight:') and not(starts-with(., 'font-weight:bold'))])">
+					<xsl:attribute name="style">
+						<xsl:value-of select="string-join($styles[starts-with(., 'font-weight:')], ';')" />
+					</xsl:attribute>
+				</xsl:if>
 				<xsl:call-template name="inline">
 					<xsl:with-param name="name" select="$name" />
 					<xsl:with-param name="styles" select="$styles[not(starts-with(., 'font-weight:'))]" />
@@ -367,9 +369,11 @@
 		</xsl:when>
 		<xsl:when test="exists($styles[starts-with(., 'font-style:') and not(starts-with(., 'font-style:normal'))])">
 			<i>
-				<xsl:attribute name="style">
-					<xsl:value-of select="string-join($styles[starts-with(., 'font-style:')], ';')" />
-				</xsl:attribute>
+				<xsl:if test="exists($styles[starts-with(., 'font-style:') and not(starts-with(., 'font-style:italic'))])">
+					<xsl:attribute name="style">
+						<xsl:value-of select="string-join($styles[starts-with(., 'font-style:')], ';')" />
+					</xsl:attribute>
+				</xsl:if>
 				<xsl:call-template name="inline">
 					<xsl:with-param name="name" select="$name" />
 					<xsl:with-param name="styles" select="$styles[not(starts-with(., 'font-style:'))]" />
@@ -378,9 +382,11 @@
 		</xsl:when>
 		<xsl:when test="exists($styles[starts-with(., 'text-decoration-line:') and not(starts-with(., 'text-decoration-line:none'))])">
 			<u>
-				<xsl:attribute name="style">
-					<xsl:value-of select="string-join($styles[starts-with(., 'text-decoration-')], ';')" />
-				</xsl:attribute>
+				<xsl:if test="exists($styles[starts-with(., 'text-decoration-line:') and not(starts-with(., 'text-decoration-line:underline'))])">
+					<xsl:attribute name="style">
+						<xsl:value-of select="string-join($styles[starts-with(., 'text-decoration-')], ';')" />
+					</xsl:attribute>
+				</xsl:if>
 				<xsl:call-template name="inline">
 					<xsl:with-param name="name" select="$name" />
 					<xsl:with-param name="styles" select="$styles[not(starts-with(., 'text-decoration-'))]" />
@@ -448,6 +454,44 @@
 		<xsl:copy-of select="@*" />
 		<xsl:apply-templates />
 	</xsl:element>
+</xsl:template>
+
+<!-- header tables -->
+
+<xsl:template match="header//table">
+	<xsl:choose>
+		<xsl:when test="every $row in * satisfies uk:can-remove-first-column($row)">
+			<xsl:apply-templates select="." mode="remove-first-column" />
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:next-match />
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:template>
+
+<xsl:function name="uk:can-remove-first-column" as="xs:boolean">
+	<xsl:param name="row" as="element()" />
+	<xsl:sequence select="count($row/*) = 3 and uk:cell-is-empty($row/*[1])" />
+</xsl:function>
+
+<xsl:function name="uk:cell-is-empty" as="xs:boolean">
+	<xsl:param name="cell" as="element()" />
+	<xsl:sequence select="empty($cell/@colspan) and empty($cell/@rowspan) and not(normalize-space($cell))" />
+</xsl:function>
+
+<xsl:template match="table" mode="remove-first-column">
+	<table class="pr_two_column">
+		<tbody>
+			<xsl:apply-templates mode="remove-first-column" />
+		</tbody>
+	</table>
+</xsl:template>
+
+<xsl:template match="tr" mode="remove-first-column">
+	<tr>
+		<xsl:copy-of select="@*" />
+		<xsl:apply-templates select="*[position() gt 1]" />
+	</tr>
 </xsl:template>
 
 
