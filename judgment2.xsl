@@ -192,7 +192,9 @@
 				<xsl:otherwise>judgment-body__text</xsl:otherwise>
 			</xsl:choose>
 		</xsl:attribute>
-		<xsl:apply-templates />
+		<xsl:apply-templates>
+			<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+		</xsl:apply-templates>
 	</p>
 </xsl:template>
 
@@ -217,18 +219,22 @@
 		<xsl:apply-templates select="../num" />
 		<xsl:text> </xsl:text>
 		<span>
-			<xsl:apply-templates />
+			<xsl:apply-templates>
+				<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+			</xsl:apply-templates>
 		</span>
 	</p>
 </xsl:template>
 
 <xsl:template match="blockContainer/p[position() gt 1]">
 	<p>
-		<xsl:apply-templates />
+		<xsl:apply-templates>
+			<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+		</xsl:apply-templates>
 	</p>
 </xsl:template>
 
-<xsl:variable name="global-styles" as="xs:string" select="normalize-space(/akomaNtoso/judgment/meta/presentation)" />
+<xsl:variable name="global-styles" as="xs:string" select="normalize-space(string(/akomaNtoso/judgment/meta/presentation))" />
 
 <xsl:function name="uk:extract-alignment" as="xs:string?">
 	<xsl:param name="p" as="element()" />
@@ -256,36 +262,48 @@
 	</xsl:choose>
 </xsl:function>
 
-<xsl:template match="header//p">
+<xsl:template match="header//p[not(parent::blockContainer)]">
 	<xsl:choose>
 		<xsl:when test="empty(preceding-sibling::*) and exists(child::img)">
 			<div class="judgment-header__logo">
-				<xsl:apply-templates />
+				<xsl:apply-templates>
+					<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+				</xsl:apply-templates>
 			</div>
 		</xsl:when>
 		<xsl:when test="exists(child::neutralCitation)">
 			<div class="judgment-header__neutral-citation">
-				<xsl:apply-templates />
+				<xsl:apply-templates>
+					<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+				</xsl:apply-templates>
 			</div>
 		</xsl:when>
 		<xsl:when test="exists(child::docketNumber)">
 			<div class="judgment-header__case-number">
-				<xsl:apply-templates />
+				<xsl:apply-templates>
+					<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+				</xsl:apply-templates>
 			</div>
 		</xsl:when>
 		<xsl:when test="exists(child::courtType)">
 			<div class="judgment-header__court">
-				<xsl:apply-templates />
+				<xsl:apply-templates>
+					<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+				</xsl:apply-templates>
 			</div>
 		</xsl:when>
 		<xsl:when test="exists(child::docDate)">
 			<div class="judgment-header__date">
-				<xsl:apply-templates />
+				<xsl:apply-templates>
+					<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+				</xsl:apply-templates>
 			</div>
 		</xsl:when>
 		<xsl:when test="matches(normalize-space(.), '^- -( -)+$')">
 			<div class="judgment-header__line-separator" aria-hidden="true">
-				<xsl:apply-templates />
+				<xsl:apply-templates>
+					<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+				</xsl:apply-templates>
 			</div>
 		</xsl:when>
 		<xsl:otherwise>
@@ -296,7 +314,9 @@
 						<xsl:attribute name="class">
 							<xsl:sequence select="concat('judgment-header__pr-', $alignment)" />
 						</xsl:attribute>
-						<xsl:apply-templates />
+						<xsl:apply-templates>
+							<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+						</xsl:apply-templates>
 					</p>
 				</xsl:when>
 				<xsl:otherwise>
@@ -309,7 +329,9 @@
 
 <xsl:template match="p">
 	<p>
-		<xsl:apply-templates />
+		<xsl:apply-templates>
+			<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+		</xsl:apply-templates>
 	</p>
 </xsl:template>
 
@@ -319,7 +341,9 @@
 		<div class="judgment-body__text">
 			<blockquote>
 				<p>
-					<xsl:apply-templates />
+					<xsl:apply-templates>
+						<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+					</xsl:apply-templates>
 				</p>
 			</blockquote>
 		</div>
@@ -328,7 +352,9 @@
 
 <xsl:template match="block">
 	<p>
-		<xsl:apply-templates />
+		<xsl:apply-templates>
+			<xsl:with-param name="is-uppercase" select="uk:is-uppercase(.)" tunnel="yes" />
+		</xsl:apply-templates>
 	</p>
 </xsl:template>
 
@@ -351,8 +377,9 @@
 <xsl:template name="inline">
 	<xsl:param name="name" as="xs:string" select="'span'" />
 	<xsl:param name="styles" as="xs:string*" select="tokenize(@style, ';')[normalize-space(.)]" />
+	<xsl:param name="is-uppercase" as="xs:boolean" select="false()" tunnel="yes" />
 	<xsl:variable name="styles" as="xs:string*" select="$styles[not(starts-with(., 'font-size:'))]" />
-	<xsl:variable name="styles" as="xs:string*" select="$styles[not(starts-with(., 'font-family:')) or contains(., 'Symbol')]" />
+	<xsl:variable name="styles" as="xs:string*" select="$styles[not(starts-with(., 'font-family:')) or contains(., 'Symbol') or contains(., 'Wingdings')]" />
 	<xsl:choose>
 		<xsl:when test="exists($styles[starts-with(., 'font-weight:') and not(starts-with(., 'font-weight:normal'))])">
 			<b>
@@ -398,15 +425,21 @@
 				<xsl:attribute name="style">
 					<xsl:value-of select="string-join($styles, ';')" />
 				</xsl:attribute>
-				<xsl:apply-templates />
+				<xsl:apply-templates>
+					<xsl:with-param name="is-uppercase" select="uk:is-uppercase(., $is-uppercase)" tunnel="yes" />
+				</xsl:apply-templates>
 			</xsl:element>
 		</xsl:when>
 		<xsl:when test="$name = 'span'">
-			<xsl:apply-templates />
+			<xsl:apply-templates>
+				<xsl:with-param name="is-uppercase" select="uk:is-uppercase(., $is-uppercase)" tunnel="yes" />
+			</xsl:apply-templates>
 		</xsl:when>
 		<xsl:otherwise>
 			<xsl:element name="{ $name }">
-				<xsl:apply-templates />
+				<xsl:apply-templates>
+					<xsl:with-param name="is-uppercase" select="uk:is-uppercase(., $is-uppercase)" tunnel="yes" />
+				</xsl:apply-templates>
 			</xsl:element>
 		</xsl:otherwise>
 	</xsl:choose>
@@ -476,11 +509,11 @@
 
 <xsl:function name="uk:cell-is-empty" as="xs:boolean">
 	<xsl:param name="cell" as="element()" />
-	<xsl:sequence select="empty($cell/@colspan) and empty($cell/@rowspan) and not(normalize-space($cell))" />
+	<xsl:sequence select="empty($cell/@colspan) and empty($cell/@rowspan) and not(normalize-space(string($cell)))" />
 </xsl:function>
 
 <xsl:template match="table" mode="remove-first-column">
-	<table class="pr_two_column">
+	<table class="pr-two-column">
 		<tbody>
 			<xsl:apply-templates mode="remove-first-column" />
 		</tbody>
@@ -602,6 +635,44 @@
 		<xsl:copy-of select="@*"/>
 		<xsl:apply-templates />
 	</xsl:copy>
+</xsl:template>
+
+
+<!-- text -->
+
+<xsl:function name="uk:is-uppercase" as="xs:boolean">
+	<xsl:param name="p" as="element()" />
+	<xsl:sequence select="uk:is-uppercase($p, false())" />
+</xsl:function>
+
+<xsl:function name="uk:is-uppercase" as="xs:boolean">
+	<xsl:param name="e" as="element()" />
+	<xsl:param name="default" as="xs:boolean" />
+	<xsl:variable name="class-regex-1" as="xs:string" select="concat('\.', $e/@class, ' \{[^\}]*text-transform:')" />
+	<xsl:variable name="class-regex-2" as="xs:string" select="concat($class-regex-1, ' ?uppercase')" />
+	<xsl:choose>
+		<xsl:when test="exists($e/@style) and contains($e/@style, 'text-transform:')">
+			<xsl:sequence select="matches($e/@style, 'text-transform: *uppercase')" />
+		</xsl:when>
+		<xsl:when test="exists($e/@class) and matches($global-styles, $class-regex-1)">
+			<xsl:sequence select="matches($global-styles, $class-regex-2)"/>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:sequence select="$default" />
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:function>
+
+<xsl:template match="text()">
+	<xsl:param name="is-uppercase" as="xs:boolean" select="false()" tunnel="yes" />
+	<xsl:choose>
+		<xsl:when test="$is-uppercase">
+			<xsl:value-of select="upper-case(.)" />
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:copy />
+		</xsl:otherwise>
+	</xsl:choose>
 </xsl:template>
 
 </xsl:transform>
