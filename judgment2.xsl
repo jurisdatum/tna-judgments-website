@@ -362,7 +362,13 @@
 	<xsl:call-template name="inline" />
 </xsl:template>
 
-<xsl:template match="neutralCitation | courtType | docketNumber | docDate">
+<xsl:template match="neutralCitation">
+	<span class="ncn-nowrap">
+		<xsl:call-template name="inline" />
+	</span>
+</xsl:template>
+
+<xsl:template match="courtType | docketNumber | docDate">
 	<xsl:call-template name="inline" />
 </xsl:template>
 
@@ -476,13 +482,19 @@
 
 <xsl:template match="table">
 	<table>
+		<xsl:variable name="header-rows" as="element()*" select="*[child::th]" />
+		<xsl:if test="exists($header-rows)">
+			<thead>
+				<xsl:apply-templates select="$header-rows" />
+			</thead>
+		</xsl:if>
 		<tbody>
-			<xsl:apply-templates />
+			<xsl:apply-templates select="* except $header-rows" />
 		</tbody>
 	</table>
 </xsl:template>
 
-<xsl:template match="tr | td">
+<xsl:template match="tr | th | td">
 	<xsl:element name="{ local-name() }">
 		<xsl:copy-of select="@*" />
 		<xsl:apply-templates />
