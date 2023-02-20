@@ -9,6 +9,8 @@
 
 <xsl:import href="judgment2.xsl" />
 
+<xsl:output method="html" encoding="utf-8" indent="yes" include-content-type="no" />
+
 <xsl:variable name="title" as="xs:string?">
 	<xsl:sequence select="/akomaNtoso/judgment/meta/identification/FRBRWork/FRBRname/@value" />
 </xsl:variable>
