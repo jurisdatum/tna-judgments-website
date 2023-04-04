@@ -264,7 +264,7 @@
 			<xsl:for-each select="(/akomaNtoso/*, /akomaNtoso/*/attachments/attachment/*)[exists(meta/presentation)]">
 				<xsl:variable name="root-key" select="generate-id(.)" />
 				<uk:classes key="{ $root-key }">
-					<xsl:for-each select="tokenize(meta/presentation, '\}')[contains(., '{')]">
+					<xsl:for-each select="tokenize(string(meta/presentation), '\}')[contains(., '{')]">
 						<xsl:variable name="selector" select="normalize-space(substring-before(., '{'))" />
 						<xsl:variable name="properties" select="normalize-space(substring-after(., '{'))" />
 						<uk:class key="{ $selector }">
@@ -327,7 +327,7 @@
 			<xsl:variable name="work-uri" as="xs:string" select="$context/meta/identification/FRBRWork/FRBRthis/@value" />
 			<xsl:variable name="uri-components" as="xs:string*" select="tokenize($work-uri, '/')" />
 			<xsl:variable name="last-two" as="xs:string*" select="$uri-components[position() >= last()-1]" />
-			<xsl:variable name="last-two-combined" as="xs:string" select="string-join($last-two)" />
+			<xsl:variable name="last-two-combined" as="xs:string" select="string-join($last-two, '')" />
 			<xsl:sequence select="concat('#', $last-two-combined, ' .', $e/@class)" />
 		</xsl:otherwise>
 	</xsl:choose>
